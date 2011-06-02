@@ -389,6 +389,7 @@ We form two new sets. One set containing the set of points above the line $AP$. 
 
 If the partitioning yields balanced sets, the the expected running time is $\O(n\log(n))$. If the partitioning is extremely unbalanced then the running time is $\O(n^2)$. A example of an extremely unbalanced set of points, is when the points lie on a half circle.
 
+
 % subsection quickhull (end)
 
 \subsection{Marriage before conquest (MBC)} % (fold)
@@ -399,13 +400,63 @@ The algorithm first calculates the upper hull and then the lower hull. It then m
 
 Let $S$ be the set of points. Divide $S$ into two sets, by dividing $S$ with the line $(p_j,p_k)$, where $p_j \in S$ is the point with minimum $x$-value and $p_k \in S$ is the point with maximum $x$-value. Let $P$ be one of the two sets.
 
-The algorithm then calculates the median $x$-coordinate $M$ of the points in $P$. It the finds the bridge segment that crosses the vertical line $x=M$. It finds this bridge segment by a technique called Prune & Search. $x=M$ divides $P$ in half. The bridge segment across this line, will be part of the final convex hull. Finding the bridge is done by the following procedure.
+The algorithm then calculates the median $x$-coordinate $M$ of the points in $P$. It the finds the bridge segment that crosses the vertical line $x=M$. It finds this bridge segment by a technique called Prune \& Search. $x=M$ divides $P$ in half. The bridge segment across this line, will be part of the final convex hull. Finding the bridge is done by the following procedure.
 
 Randomly pair the points in $P$ into $n/2$ distinct line segments. Name the line segments $q_i$. Let the point of line segment $q_i$ with the lowest $x$-value be called $q_{il}$, and the point with the largest $x$-value $q_{ir}$. This pairing can be done in $\O(n)$.
 
 Determine the median slope, $m$ of all the distinct line segments. If the number of points is odd, there will be a point that is not part of a line segment. Give this point a slope of $0$. If the number of line segments is even there are two choices for the median slope. Let $m$ be the max of these two slopes.
 
-Construct a sweep line, $L$, having the median slope, i.e $y = mx+b$. Find a point $p_t$ such that $L$ is a supporting line\footnote{A supporting line for a set $S$ is a line that contains a point } for $P$ at $p_t$.
+Construct a sweep line, $L$, having the median slope, i.e $y = mx+b$. Find a point $p_t$ such that $L$ is a supporting line\footnote{A supporting line for a set $S$ is a line that contains a point $p_i \in S$ an no other points above.} for $P$ at $p_t$, this can be done by translating. We call $p_t$ the top point. Let $p_j.x$ define the $x$-coordinate of the point $p_j$. If $p_t.x \geq M$, i.e the top point is to the right of the vertical line M, then for each line segment with slope $< m$ remove the right point of the line segment, i.e $q_{ir}$. If $p_t.x < M$, i.e. the top point is to the left of the vertical line $M$, then for each line segment with slope $>m$, remove the left point $q_{il}$. Repeat this until only two points are left. We know that at least half of the line segments has a slope greater than $m$, therefore we can conclude that we at each iteration of the bridge finding removes $1/4$ of the points. Note that the points are only removed in the current step where we find the bridge, not the set $P$.
+
+Delete the points under the bridge, and split $P$ into the two half's divided by the vertical line. Continue recursively on each half.
+
+The complexity of the bridge finding is as follows. Pairwise point matching takes $\O(n)$, finding the median slope takes $\O(n)$, slope translation takes $\O(n)$. Each time we remove points we are sure to remove $1/4$ of the points. This yields 
+\begin{align*}
+T(n) &= \O(1) &\qquad n=2\\ 
+T(n) &= T(3n/4) + \O(n) &\qquad \text{if } n>2
+\end{align*}
+thus the complexity of the bridge finding and finding the median is $T(n)=\O(n)$.
+
+The total overall complexity can be bounded by the following function
+\begin{align*}
+f(n,h) &= cn &\qquad h=2  \\ 
+f(n,h) &= cn + \max_{h_l+h_r = h}\left\{f(n/2,h_l)+f(n/2,h_r)\right\} &\qquad h>2
+\end{align*}
+where $c$ is a positive constant. The max is introduced because the algorithm is output sensitive. The claim is that the complexity is $f(n,h) = \O(n\log(h))$, thus we can find a upper bound by the function $cn\log(h)$.
+
+\begin{proof}
+
+  For $h=2$                
+  \begin{equation}
+    f(n,h) = c_1n \leq cn\log(2)
+  \end{equation}
+  this trivially holds if $c_1 \leq c$
+  
+  Assume $h>2$ and bu subsitution we have
+  \begin{align*}
+   f(n,h) &= cn + \max_{h_l+h_r = h}\left\{cn/2\log(h_l)+cn/2\log(h_r)\right\} \\
+          &= cn + cn/2\max_{h_l+h_r = h}\left\{\log(h_l)+\log(h_r)\right\} \\
+          &= cn + cn/2\max_{h_l+h_r = h}\left\{\log(h_lh_r)\right\} \\          
+          &= cn + cn/2\max_{h_l+h_r = h}\left\{\log(h_l(h-h_l))\right\} \\         
+          &= cn + cn/2\max_{h_l+h_r = h}\left\{\log(hh_l-h_l^2))\right\}                    
+  \end{align*}
+    
+  When does the function $g(h_l) = \log(hh_l-h_l^2)$ takes it's maximum. It does when the derivative is $0$.
+  \begin{equation}
+    g_{h_l}'(h_l,h) = \frac{1}{hh_l-h_l^2} (h-2h_l) = 0 
+  \end{equation}
+  If $g_{h_l}'(h_l)=0$ then $h-2h_l=0$ yielding $h_l = \frac{h}{2}$. Thus
+  \begin{align*}
+   f(n,h) &= cn + cn/2\log(h\frac{h}{2}-\frac{h^2}{2^2})) \\
+          &= cn + cn/2\log(\frac{h^2}{2}-\frac{h^2}{2^2})) \\   
+          &= cn + cn/2\log(\frac{2h^2}{4}-\frac{h^2}{2^2})) \\
+          &= cn + cn/2\log(\frac{h^2}{2^2})) \\                       
+          &= cn + 2cn/2\log(\frac{h}{2}) \\                                 
+          &= cn + cn\log(\frac{h}{2})                                 
+  \end{align*}
+   which has a running time of $\O(n\log(h))$
+   
+\end{proof}
 
 % subsection marriage_before_conquest_mbc_ (end)
 
