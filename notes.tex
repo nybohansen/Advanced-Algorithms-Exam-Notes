@@ -353,6 +353,16 @@ Grahams scan has a running time of $\O(n\log(n))$. It starts by choosing a the p
 
 Put $p_0, p_1, p_2$ in the list of nodes that constitutes the convex hull. If making a left turn when adding $p_3$, remove $p_2$ and add $p_3 to the list$. Otherwise if making a right turn, add $p_3$ to the list. Continue adding nodes. If adding node $p_j$ creates a left turn, then remove node $p_{j-1}$ and add $p_j$. Otherwise just add $p_j$. When last node has been reached, the convex hull is done.
 
+The correctness of Grahams scan can be explained by the following observations. 
+
+\begin{itemize}
+  \item Grahams scan will never go backwards behind the initial node. 
+  \item When ariving at point $p_i$ all points between the initial node and the point $p_i$ are right turns on the polygonal line constructed so far
+  \item After arriving at the initial node by a right turn, we get a polygonal line consisting of purely right turns. 
+\end{itemize}
+
+
+
 The time complexity is $\O(n\log(n))$ since sorting takes $\O(n\log(n))$ and the scanning takes $\O(n)$, since each point is only considered once. The total time complexity is thus $\O(n\log(n)+n)=\O(n\log(n))$.
 
 % subsection grahams_scan (end)
@@ -381,14 +391,21 @@ If the partitioning yields balanced sets, the the expected running time is $\O(n
 
 % subsection quickhull (end)
 
-\subsection{Randomized incremental} % (fold)
-\label{sub:randomized_incremental}
-
-% subsection randomized_incremental (end)
-
 \subsection{Marriage before conquest (MBC)} % (fold)
 \label{sub:marriage_before_conquest_mbc_}
 The Kirkpatrick-Seidel algorithm (Marriage before conquest) is output sensitive and has running time $\O(n\log{h})$, where $h$ is the number of points in the convex hull.
+
+The algorithm first calculates the upper hull and then the lower hull. It then merges these two into the final convex hull. We can safely assume that the merging of the two half hulls can be performed in $\O(1)$.
+
+Let $S$ be the set of points. Divide $S$ into two sets, by dividing $S$ with the line $(p_j,p_k)$, where $p_j \in S$ is the point with minimum $x$-value and $p_k \in S$ is the point with maximum $x$-value. Let $P$ be one of the two sets.
+
+The algorithm then calculates the median $x$-coordinate $M$ of the points in $P$. It the finds the bridge segment that crosses the vertical line $x=M$. It finds this bridge segment by a technique called Prune & Search. $x=M$ divides $P$ in half. The bridge segment across this line, will be part of the final convex hull. Finding the bridge is done by the following procedure.
+
+Randomly pair the points in $P$ into $n/2$ distinct line segments. Name the line segments $q_i$. Let the point of line segment $q_i$ with the lowest $x$-value be called $q_{il}$, and the point with the largest $x$-value $q_{ir}$. This pairing can be done in $\O(n)$.
+
+Determine the median slope, $m$ of all the distinct line segments. If the number of points is odd, there will be a point that is not part of a line segment. Give this point a slope of $0$. If the number of line segments is even there are two choices for the median slope. Let $m$ be the max of these two slopes.
+
+Construct a sweep line, $L$, having the median slope, i.e $y = mx+b$. Find a point $p_t$ such that $L$ is a supporting line\footnote{A supporting line for a set $S$ is a line that contains a point } for $P$ at $p_t$.
 
 % subsection marriage_before_conquest_mbc_ (end)
 
