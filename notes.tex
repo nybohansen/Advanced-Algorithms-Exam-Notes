@@ -174,21 +174,21 @@ This running time can be improved by selecting the augmenting path by breath fir
 
 \section{Linear Programming} % (fold)
 \label{sec:linear_programming}
-Linear Programming - CLRS,  Chapter 29,
 
-In linear programming we want to maximize a linear function, under a number of constraints. An example of a linear program is
-\begin{align*}
- \max &\quad 3x_1 + x_2 +2x_3  \\ 
- \text{St.} &\quad  x_1 + x_2 + 3x_3  \leq 30 \\
-            &\quad  2x_1 + 2x_2 + 5x_3 \leq 24 \\
-            &\quad  4x_1 + x_2 + 2x_3 \leq 36 \\            
-            &\quad  x_1,x_2,x_3 \geq 0
-\end{align*}
-
+In linear programming we want to maximize (or minimize) a linear function, under a number of constraints. An example of a linear program is
+\begin{align}
+ \max &\quad x_1 + x_2  \label{linprop1}\\ 
+ \text{St.} &\quad  4x_1 - x_2  \leq 8 \nonumber\\
+            &\quad  2x_1 + x_2  \leq 10 \nonumber\\
+            &\quad  5x_1 - 2x_2 \leq -2 \nonumber\\            
+            &\quad  x_1,x_2,x_3 \geq 0  \nonumber
+\end{align}
+\ref{linprop1} is called the objective function.
+                                                                      
 A linear program in 2 dimensions can be illustrated as figure \ref{fig3}. The gray area is called the feasible region.
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/fig3.pdf}
+\includegraphics[width=0.5\textwidth]{figures/fig3.pdf}
 \caption{Illustration of a simple linear program where the objective function is $x_1 + x_2$. The feasible region is gray.}
 \label{fig3}
 \end{figure}
@@ -199,10 +199,90 @@ A linear program can be written in two ways. Standard form and slack form. When 
  \text{S.t.} &\quad \sum_{j=1}^n a_{ij}x_j \leq b_i \qquad i=1,2,\ldots,m\\
              &\quad x_j \geq 0 \qquad i=1,2,\ldots,n\\
 \end{align*}
-where $m$ is the number of constraints and $n$ is the number of variables. One could think of $a$ as a matrix having, $m$ rows and $a$ columns.
+where $m$ is the number of constraints and $n$ is the number of variables. One could think of $a$ as a matrix having, $m$ rows and $a$ columns. Every linear program can be rewritten to slack form. 
 
+\subsection{Converting into standard form} % (fold)
+\label{sub:converting_into_standard_form}
+A linear program does not have to take standard form. But we can always turn a linear program into standard form. The following section describes how to convert a non-standard form linear program into standard form.
+
+\begin{itemize}
+  \item If the program is a minimization problem, then it can be turned into a maximization problem by multiplying the objective function by -1. The constraints are not changed, since the feasible region is the same, regardless if we want to maximize or minimize an objective function under the same constraints.                                                                         
+  \item If the linear program contains variables, $x_j$ without nonnegative constraints we can replace $x_j$ so $x_j = x_j'-x_j''$, and add the constraints $x_j', x_j''>0$.
+  \item If the linear program contains equality constraints, then replace each equality with to inequality constraints going opposite ways, i.e $a = b \Leftrightarrow a \leq b \wedge a \geq b$. 
+  \item If the linear program contains inequality constraints, but instead of less than, they are greater than, then multiply the constraint with $-1$.
+\end{itemize}
+
+The following is an example of how to convert a non-linear program into standard form. 
+\begin{align*}
+ \min &\quad -2x_1 + 3x_2  \\ 
+ \text{St.} &\quad  x_1 + x_2  = 7 \\
+            &\quad  x_1 - 2x_2 \leq 4 \\
+            &\quad  x_1        \geq 0  
+\end{align*}
+
+Start by making it a maximization problem, i.e. multiply the objective function with $-1$.
+\begin{align*}
+ \max &\quad 2x_1 - 3x_2  \\ 
+ \text{St.} &\quad  x_1 + x_2  = 7 \\
+            &\quad  x_1 - 2x_2 \leq 4 \\
+            &\quad  x_1        \geq 0  
+\end{align*}
+Next place $x_2$ under the nonnegative constraint. Let $x_2 = x_2'-x_2''$ then
+\begin{align*}
+ \max &\quad 2x_1 - 3x_2' +3x_2''  \\ 
+ \text{St.} &\quad  x_1 + x_2'-x_2''  = 7 \\
+            &\quad  x_1 - 2x_2' +2x_2'' \leq 4 \\
+            &\quad  x_1, x_2', x_2''    \geq 0  
+\end{align*}
+Make a cleanup so we remove those pesky primes, just rename $x_2' = x_2$ and $x_2'' = x_3$.
+\begin{align*}
+ \max &\quad 2x_1 - 3x_2 +3x_3  \\ 
+ \text{St.} &\quad  x_1 + x_2-x_3  = 7 \\
+            &\quad  x_1 - 2x_2 +2x_3 \leq 4 \\
+            &\quad  x_1, x_2, x_3    \geq 0  
+\end{align*}
+Lets remove the equality sign, by replacing the equality with to opposite directed inequalities i.e.
+\begin{align*}
+ \max &\quad 2x_1 - 3x_2 +3x_3  \\ 
+ \text{St.} &\quad  x_1 + x_2-x_3  \leq 7 \\
+            &\quad  x_1 + x_2-x_3  \geq 7 \\
+            &\quad  x_1 - 2x_2 +2x_3 \leq 4 \\
+            &\quad  x_1, x_2, x_3    \geq 0  
+\end{align*}
+Final thing we need to do, is to turn the greater than into a less than my multiplying with $-1$, i.e.
+\begin{align*}
+ \max &\quad 2x_1 - 3x_2 +3x_3  \\ 
+ \text{St.} &\quad  x_1 + x_2-x_3  \leq 7 \\
+            &\quad  -x_1 - x_2 + x_3  \leq -7 \\
+            &\quad  x_1 - 2x_2 +2x_3 \leq 4 \\
+            &\quad  x_1, x_2, x_3    \geq 0  
+\end{align*}
+and the linear program in now in standard form.
+% subsection converting_into_standard_form (end)
+
+
+\subsection{Slack form} % (fold)
+\label{sub:slack_form}
+In slack form, the inequalities are replaced by equalities and a number of slack variables are introduced. We can rewrite the the standard form linear program shown in \ref{linprop1} to slack form as
+\begin{align*}
+ \max &\quad x_1 + x_2  \\ 
+ \text{St.} &\quad  x_4 = 8 - 4_x1 + x_2 \\
+            &\quad  x_5 = 10 -2x_1 - x_2\\
+            &\quad  x_6 = -2 -5x_1 + 2x_2 \\            
+            &\quad  x_1,x_2,x_3,x_4,x_5,x_6 \geq 0 
+\end{align*}
+% subsection slack_form (end)
+
+\subsection{SIMPLEX algorithm} % (fold)
+\label{sub:simplex_algorithm}
 There exists several methods to solve linear programs. Some methods are polynomial, but doesn't work well in practice. A non polynomial method is called simplex. Simplex has it name from the shape of the feasible region.
 
+Simplex needs the problem in standard form
+% subsection simplex_algorithm (end)
+
+\subsection{Duality} % (fold)
+\label{sub:duality}
+Weak and strong
 
 What is it?
 
@@ -210,6 +290,8 @@ What is to be proved
 
 Do not do the proof, but understand!
 
+
+% subsection duality (end)
 
 % section linear_programming (end)
 
@@ -301,8 +383,6 @@ Some problems can be solved in a simple way by using randomization. E.g. median 
 In median finding there is a linear algorithm that finds it deterministic, but a randomized algorithm is actual more efficient.
 
 Affordability: Walking in a maze, in an "oblivious" manner i.e. we don't remember where we have been/walked until a certain point. At any node flip a coin to determine the direction. By doing this enough times you're guaranteed to sooner or later to arrive at the destination/goal. Such walks are called "random walks". 
-
-
 
 
 Hiring problem: A way to model certain procedures, so can determine the worst case, expected cost and how we can use randomization to avoid worst case.
