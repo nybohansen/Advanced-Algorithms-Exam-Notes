@@ -77,7 +77,7 @@ thus the capacity of a cut, is the total capacity of all connections between the
 \label{sub:min_cut_theorem}
 A Min-cut is a cut where the capacity over all cuts is minimized. We thus choose to partition the $V$ such that the capacity, $c(X,Y)$, between the two sets are minimized.
 
-Show that an augmenting path increases the flow value.
+Show that an augmenting path increases the flow value. This is intuitively true, since when finding an augmenting path, it is added to the original graph.
 
 Show that the flow value has an upper bound. Let $V$, in a graph $G = (V,E)$, be partitioned into two subsets, $S$ and $T$. The flow value then has a upper bound equal to the capacity of the cut. The following proves this statement
 \begin{align*}
@@ -88,19 +88,23 @@ Show that the flow value has an upper bound. Let $V$, in a graph $G = (V,E)$, be
      &= c(S,T)
 \end{align*}
 
-Given a graph $G = (V,E)$, the min-cut theorem states that the following three statements are equivalent
 
+\begin{theorem}
 
-\begin{enumerate}
-  \item $f$ is a maximum flow in G, i.e the flow value, $|f|$, is maximized
-  \item There are no augmenting paths in the residual network, $G_f$
-  \item $|f| = c(S,T)$ for some cut $(S,T)$ in $G$
-\end{enumerate}
+  Given a graph $G = (V,E)$ and a flow $f$ ($f$ does not necessarily be a max flow), the min-cut theorem states that the following three statements are equivalent
 
-
-The proof is done in a circular fashion. We will start by showing $1 \Rightarrow 2$ by contradiction. 
+  \begin{enumerate}
+    \item $f$ is a maximum flow in G, i.e the flow value, $|f|$, is maximized
+    \item There are no augmenting paths in the residual network, $G_f$
+    \item $|f| = c(S,T)$ for some cut $(S,T)$ in $G$
+  \end{enumerate}
+  
+\end{theorem}
 
 \begin{proof}
+
+The proof is done in a circular fashion. We will start by showing $1 \Rightarrow 2$ by contradiction.   
+  
 Let $f$ be a maximum flow in $G$. Let there be an augmenting path in the residual network. Hence there is a nonzero flow $f'$ in $G_f$. Thus $f \uparrow f'$ is stictly greater than $f$. This is a contradiction compared to our initial belief that $f$ was a maximum.
 \end{proof} 
 
@@ -171,13 +175,13 @@ This running time can be improved by selecting the augmenting path by breath fir
 % subsection ford_fulkerson_and_edmonds_karp (end)
 
 % section max_flow (end)
-
+\clearpage \newpage
 \section{Linear Programming} % (fold)
 \label{sec:linear_programming}
 
 In linear programming we want to maximize (or minimize) a linear function, under a number of constraints. An example of a linear program is
 \begin{align}
- \max &\quad x_1 + x_2  \label{linprop1}\\ 
+ \max &\quad x_1 + x_2 \label{linprop1}\\ 
  \text{St.} &\quad  4x_1 - x_2  \leq 8 \nonumber\\
             &\quad  2x_1 + x_2  \leq 10 \nonumber\\
             &\quad  5x_1 - 2x_2 \leq -2 \nonumber\\            
@@ -250,68 +254,382 @@ Lets remove the equality sign, by replacing the equality with to opposite direct
             &\quad  x_1, x_2, x_3    \geq 0  
 \end{align*}
 Final thing we need to do, is to turn the greater than into a less than my multiplying with $-1$, i.e.
-\begin{align*}
- \max &\quad 2x_1 - 3x_2 +3x_3  \\ 
- \text{St.} &\quad  x_1 + x_2-x_3  \leq 7 \\
-            &\quad  -x_1 - x_2 + x_3  \leq -7 \\
-            &\quad  x_1 - 2x_2 +2x_3 \leq 4 \\
+\begin{align}
+ \max &\quad 2x_1 - 3x_2 +3x_3  \label{linprop2}\\ 
+ \text{St.} &\quad  x_1 + x_2-x_3  \leq 7 \nonumber\\
+            &\quad  -x_1 - x_2 + x_3  \leq -7 \nonumber\\
+            &\quad  x_1 - 2x_2 +2x_3 \leq 4 \nonumber\\
             &\quad  x_1, x_2, x_3    \geq 0  
-\end{align*}
+\end{align}
 and the linear program in now in standard form.
 % subsection converting_into_standard_form (end)
 
 
 \subsection{Slack form} % (fold)
 \label{sub:slack_form}
-In slack form, the inequalities are replaced by equalities and a number of slack variables are introduced. We can rewrite the the standard form linear program shown in \ref{linprop1} to slack form as
+In slack form, the inequalities are replaced by equalities and a number of slack variables are introduced. We can rewrite the standard form linear program shown in \ref{linprop2} to slack form as
 \begin{align*}
- \max &\quad x_1 + x_2  \\ 
- \text{St.} &\quad  x_4 = 8 - 4_x1 + x_2 \\
-            &\quad  x_5 = 10 -2x_1 - x_2\\
-            &\quad  x_6 = -2 -5x_1 + 2x_2 \\            
-            &\quad  x_1,x_2,x_3,x_4,x_5,x_6 \geq 0 
+ \max &\quad 2x_1 - 3x_2 +3x_3 \\ 
+ \text{St.} &\quad  x_4 = 7 - x_1 - x_2 + x_3\\
+            &\quad  x_5 = -7 + x_1 + x_2 -x_3\\
+            &\quad  x_6 = 4 -x_1 + 2x_2 -2x_3\\
+            &\quad  x_1, x_2, x_3, x_4, x_5, x_6    \geq 0  
 \end{align*}
+We have just introduced the three \emph{basic variables} $x_4,x_5,x_6$ and rearranged the original non-basic variables. In general when going from standard to slack form, you need $m$ new slack variables, where $m$ denotes the number of constraints.
 % subsection slack_form (end)
 
 \subsection{SIMPLEX algorithm} % (fold)
 \label{sub:simplex_algorithm}
 There exists several methods to solve linear programs. Some methods are polynomial, but doesn't work well in practice. A non polynomial method is called simplex. Simplex has it name from the shape of the feasible region.
 
-Simplex needs the problem in standard form
+The geometric interpretation of SIMPLEX is as follows. It starts at a corner point: the origin, and looks at the edges incident with that point. Then it chooses one, and moves along an edge which makes the objective value get larger (or stay the same). If the edge goes on forever, then the LP is unbounded; if the edge does not go on forever, it ends up at another corner point. Then the Simplex Method does the same thing over and over again, until it stops at a certain point. That point is the place where the objective value is the largest.
+
+
+Normally, this would only lead you to a local maximum, instead of the global maximum, but this cannot happen when solving a LP. This is because the objective values and inequalities are linear in form.
+
+Given a linear program
+
+\begin{align}
+  \max &\quad 2x_1 - x_2 \label{aux1}\\ 
+  \text{St.} &\quad  2x_1 - x_2  \leq 7 \nonumber\\
+             &\quad  x_1 - 5x_2  \leq -7 \nonumber\\
+             &\quad  x_1, x_2    \geq 0 
+\end{align}
+
+Simplex needs the problem in standard form, it starts by converting the problem into slack form, i.e.
+\begin{align}
+  z  &= 2x_1 - x_2 \label{aux2}\\ 
+  x_3 &= 7 - 2x_1 + x_2 \nonumber\\
+  x_4 &= -7-x_1 + 5x_2  \nonumber\\
+  &x_1, x_2, x_3, x_4    \geq 0 
+\end{align}
+
+
+it then finds a initial solution. Typically this solution is found by setting the variables to $0$. Sometimes the initial solution isn't feasible as can be see in \ref{aux2}. In this case, we need to formulate an auxiliary program. The auxiliary program for \ref{aux1} is
+
+\begin{align}
+  \max &\quad -x_0 \\ 
+  \text{St.} &\quad  2x_1 - x_2 -x_0 \leq 2 \nonumber\\
+             &\quad  x_1 - 5x_2 -x_0 \leq -4 \nonumber\\
+             &\quad  x_1, x_2,x_0    \geq 0 \nonumber 
+\end{align}
+ 
+The auxiliary program is then solved with the SIMPLEX algorithm. It starts by rewriting the problem into slack form
+\begin{align}
+    z &= -x_0 \\ 
+  x_3 &= 2 - 2x_1 + x_2 + x_0  \nonumber\\
+  x_4 &= -4 - x_1  + 5x_2 + x_0  \nonumber\\
+  &x_0, x_1, x_2, x_3, x_4    \geq 0 \nonumber 
+\end{align}
+And pivot's, so $x_0$ enters the basis, on the constraint that is most negative
+\begin{align}
+    z &= -x_0 \\ 
+  x_3 &= 2 - 2x_1 + x_2 + x_0  \nonumber\\
+  x_0 &= 4 + x_1 -5x_2 + x_4    \nonumber\\
+  &x_0, x_1, x_2, x_3, x_4    \geq 0 \nonumber 
+\end{align}
+and substitutes $x_0$ into the objective function and the constraints
+\begin{align}
+    z &= -4 - x_1 + 5x_2 - x_4\\ 
+  x_0 &= 4 + x_1 - 5x_2 + x_4   \nonumber\\
+  x_3 &= 6 - x_1 - 4x_2 + x_4   \nonumber\\
+  &x_0, x_1, x_2, x_3, x_4    \geq 0 \nonumber 
+\end{align}
+The basic feasible solution to this problem is $(x_0, x_1, x_2, x_3, x_4) = (4, 0, 0, 6, 9)$. We want the optimal solution so we need to do a pivot. Since $5x_2$ is the only one that is nonnegative, we investigate this: $x_0$ binds with $4/5=16/20$, and $x_3$ binds with $6/4=30/20$. We thus choose to pivot on $x_0$ and $x_2$, since $x_0$ is the most binding.
+\begin{align}
+    z &= -4 - x_1 + 5(\frac{4}{5} - \frac{1}{5} x_0 + \frac{1}{5} x_1 + \frac{1}{5} x_4) - x_4\\ 
+  x_2 &= \frac{4}{5} - \frac{1}{5} x_0 + \frac{1}{5} x_1 + \frac{1}{5} x_4    \nonumber\\
+  x_3 &= 6 - x_1 - 4(\frac{4}{5} - \frac{1}{5} x_0 + \frac{1}{5} x_1 + \frac{1}{5} x_4) + x_4   \nonumber\\
+  &x_0, x_1, x_2, x_3, x_4    \geq 0 \nonumber 
+\end{align}
+reducing yields
+\begin{align}
+    z &= - x_0 \label{aux3}\\ 
+  x_2 &= \frac{4}{5} - \frac{1}{5} x_0 + \frac{1}{5} x_1 + \frac{1}{5} x_4    \nonumber\\
+  x_3 &= \frac{14}{5} + \frac{4}{5} x_0 - \frac{9}{5} x_1 + \frac{1}{5} x_4    \nonumber\\
+  &x_0, x_1, x_2, x_3, x_4    \geq 0 \nonumber 
+\end{align}
+this slack form is the final solution to the auxiliary problem. Since $x_0 = 0$ we know it's optimal, and that the initial problem was feasible. Since $x_0=0$ we can remove it from the set of constraints. The original objective function \ref{aux2} can then be restored, substituting the basic variables from \ref{aux1}, and retaining the constraints form \ref{aux3}
+
+\begin{align}
+    z &= - \frac{4}{5} + \frac{9}{5} x_1 - \frac{1}{5} x_4\\ 
+  x_2 &= \frac{4}{5} + \frac{1}{5} x_1 + \frac{1}{5} x_4    \nonumber\\
+  x_3 &= \frac{14}{5} - \frac{9}{5} x_1 + \frac{1}{5} x_4    \nonumber\\
+  &x_1, x_2, x_3, x_4    \geq 0 \nonumber 
+\end{align}
+
+Setting this slack form to zero, yields the basic solution $(x_1, x_2, x_3, x_4) = (0, \frac{4}{5} , \frac{14}{5} , 0)$. This slack form can now be solved by using the SIMPLEX algorithm again.
+
+a flow chart of the simplex can be seen in figure \ref{fig4}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig4.pdf}
+\caption{Flowchart of the SIMPLEX algorithm}
+\label{fig4}
+\end{figure}
+
+
 % subsection simplex_algorithm (end)
 
 \subsection{Duality} % (fold)
 \label{sub:duality}
-Weak and strong
 
-What is it?
+Duality means that finding a solution in one problem 
 
-What is to be proved
+Given a linear program with $n$ variables and $m$ constraints
+\begin{align}
+ \max &\quad \sum_{j=1}^n c_jx_j  \nonumber\\ 
+ \text{S.t.} &\quad \sum_{j=1}^n a_{ij}x_j \leq b_i \qquad i=1,2,\ldots,m\label{dual10}\\
+             &\quad x_j \geq 0 \qquad i=1,2,\ldots,n \nonumber
+\end{align}
+and call this the \emph{primal}. We define the \emph{dual} as 
+\begin{align}
+ \min &\quad \sum_{i=1}^m b_iy_i  \nonumber\\ 
+ \text{S.t.} &\quad \sum_{j=1}^m a_{ij}y_i \geq c_j \qquad j=1,2,\ldots,n \label{dual0}\\
+             &\quad y_j \geq 0 \qquad i=1,2,\ldots,m \nonumber
+\end{align}
+The dual is a minimization problem and it has $m$ variables and $n$ constraints. Furthermore the less-than-equal-to has been replaced by greater-than-equal-to. Each $b_i$ in the primal is now part of the objective function as a coefficient. Each $c_j$ in the primal is now the right handside of the constraints. If $a$ was a matrix then in the dual it is transposed. 
 
-Do not do the proof, but understand!
+Example: Let the primal be
+\begin{align}
+ \max &\quad 3x_1 + x_2 + 2x_3\label{dual1}\\ 
+ \text{St.} &\quad  x_1  + x_2  + 3x_3 \leq 30 \nonumber\\
+            &\quad  2x_1 + 2x_2 + 5x_3 \leq 24 \nonumber\\
+            &\quad  4x_1 + x_2  + 2x_3 \leq 36 \nonumber\\            
+            &\quad  x_1,x_2,x_3 \geq 0  \nonumber
+\end{align}
+then the dual is
+\begin{align}
+ \min &\quad 30y_1 + 24y_2 + 36y_3 \label{dual2}\\ 
+ \text{St.} &\quad  y_1 + 2y_2  + 4y_3 \leq 3 \nonumber\\
+            &\quad  y_1 + 2y_2  + 1y_3 \leq 1 \nonumber\\
+            &\quad  3y_1 + 5y_2  + 2y_3 \leq 2 \nonumber\\            
+            &\quad  x_1,x_2,x_3 \geq 0  \nonumber
+\end{align}
 
+Weak linear-programming duality states the following
+\begin{theorem}
+  Given a feasible solution to the primal problem, $\bar{x}$, and a feasible solution to the dual problem, $\bar{y}$, then
+  \begin{equation}
+  \sum_{j=1}^n c_jx_j \leq \sum_{i=1}^m b_iy_i
+  \end{equation}  
+\end{theorem}
+said in words: the primal is bounded above by the dual.
 
+\begin{proof}
+Let $\bar{x}$ and $\bar{y}$, be feasible solutions to the primal and the dual respectively.
+
+From \ref{dual0} we know that $\sum_{j=1}^m a_{ij}y_i \geq c_j$. Thus we can write
+\begin{equation}
+\sum_{j=1}^n c_j\bar{x}_j \leq  \sum_{j=1}^n \left (\sum_{j=1}^m a_{ij}\bar{y}_i\right)\bar{x}_j   
+\end{equation}
+exchanging $\bar{x}_i$ and $\bar{y}_i$ yields
+\begin{equation}
+\sum_{j=1}^n c_j\bar{x}_j \leq  \sum_{j=1}^n \left (\sum_{j=1}^m a_{ij}\bar{x}_j\right)\bar{y}_i
+\end{equation}
+and \ref{dual10} gives us $\sum_{j=1}^m a_{ij}x_j \leq b_i$ which we can insert
+\begin{equation}
+\sum_{j=1}^n c_j\bar{x}_j \leq  \sum_{j=1}^m b_i\bar{y}_i
+\end{equation}
+and we arrive what we wanted to prove.
+\end{proof}
+
+The duality theorem states that if a feasible solution of the primal, is equal to a feasible solution to the dual, the this feasible solution is optimal to both the primal and the dual. More precisely the theorem states
+
+\begin{theorem}
+Let SIMPLEX terminate with a feasible basic solution $\bar{x}*=(x_1*,x_2*,\ldots,x_n*)$, and let $N$ denote the nonbasic and $B$ the basic variables for the final slack form. Let $c'$ denote the coefficients of the objective function in the final slack form. 
+
+Not let $\bar{y}* = (y_1*,y_2,\ldots,y_m)$ be defined as
+
+\begin{equation} 
+\bar{y}* = 
+\left\{
+\begin{array}{rl} 
+  -c'_{n+i} & \text{if } (n+i) \in N \\
+   0 & \text{otherwise}
+\end{array} 
+\right. 
+\end{equation} 
+
+then $\bar{x}*$ is an optimal solution to the primal, and $\bar{y}*$ is an optimal solution to the dual and
+\begin{equation}
+  \sum_{j=1}^n c_jx_j* = \sum_{i=1}^m b_iy_i*
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+In order to prove the above, we have to show that $\bar{y*}$ is a feasible solution to the dual, and that 
+\begin{equation}
+  \sum_{j=1}^n c_jx_j* = \sum_{i=1}^m b_iy_i*  
+\end{equation}
+\end{proof}
+ 
 % subsection duality (end)
 
 % section linear_programming (end)
 
+\clearpage \newpage
+
 \section{NP-completeness} % (fold)
 \label{sec:np_completeness}
-NP-completeness -CLRS, Chapter 34,   
+
+NP-complete problems is a class of problems that has algorithms that run in \emph{super polynomial} time, i.e. there running time is thus $>\O(N^k)$, for some constant $k$.
+
+NP-completeness only applies to decision problems. A optimization problem can easily be made into a decision problem by setting a bound. E.g. a shortest path problem\footnote{Finding the shortest path between two nodes in a graph} can be made into a decision problem, by asking: Is there a shortest path between these two nodes with at most length $k$?.  
+
+When we are proving something is NP-complete, and therefore hard to solve, we are proving it under the constraint that no polynomial algorithm exist for a NP-complete problem. This assumption is still not proved formally (But if this does not hold, we have a BIG problem!).
 
 
-The proof of  Theorem 34.13 was not treated in the lecture, and therefore it is given lower priority. You will not be asked to give an account for this proof in the exam. All other NP-completeness proofs in Chapter 34 have been covered, so it is recommended that you study and try to understand them. The "proof" of Lemma 34.6 (CIRCUIT-SAT is NP-hard) in the book is actually only a sketch of a proof, rather than a full proof, but it is worthwhile to study and understand the arguments which are given there. Further, of course you should know how the classes NP and Co-NP are defined, their corresponding languages, what it means that a problem is NP-complete, the notion of a reduction, etc.
+\subsection{Language} % (fold)
+\label{sub:language}
+A language describes a problem. E.g. the language for the Hamilton cycle problem can be described as "Does the graph $G$ have a Hamilton cycle", or more formally
+\begin{equation}
+HAM-CYCLE = \{\langle G \rangle\: G \text{ is a hamilton cycle}\}   
+\end{equation}
+The contents between the $\langle$ and $\rangle$ is the input to the problem.
+% subsection language (end)
+
+\subsection{Reduction algorithm} % (fold)
+\label{sub:reduction_algorithm}
+Suppose we have a decision problem $A$ that we want to solve in polynomial time. Now suppose we already know how to solve a different decision problem, $B$, in polynomial time. Finally suppose we have a algorithm that transforms an instance $a \in A$, into an instance $b \in B$ with the following characteristics
+\begin{itemize}
+  \item The transformation is done in polynomial time
+  \item The answers are the same, i.e $a \Leftrightarrow b$.
+\end{itemize}
+this algorithm is then called a \emph{reduction algorithm}. 
+
+The key point in the reduction algorithm, is that it runs in polynomial time. Suppose we had an instance of a non-polynomial problem we could transform, in polynomial time, into an other problem that could be solved by a polynomial algorithm. The final result would be a running time of $\O(n^{k_1})+O(n^{k_2}) = O(n^k)$ yielding a polynomial algorithm to a non-polynomial problem.
+
+Formally we say that a problem $L_1$ is polynomial time reducible to $L_2$, i.e. $L_1 \leq_p L2$ if there exist a function $f$ such
+\begin{equation}
+  x \in L_1 \Leftrightarrow f(x) \in L_2 \label{eq15}
+\end{equation}
+we call $f$ a \emph{reduction function} and it can be computed by a reduction algorithm.
+
+% subsection reduction_algorithm (end)
+
+
+\subsection{Definition of classes} % (fold)
+\label{sub:definition_of_classes}
+
+We call the class of problems for which a polynomial time algorithm is known for $P$. More formally  
+\begin{definition}
+Let $p \in P$ be a problem in $P$. Then there exist a polynomial algorithm that can solve the $p$ in time $\O(n^k)$, where $n$ is the input size and $k$ is a constant. The language for $P$ is
+\begin{equation}
+  P = \{\text{L: L is accepted be a polynomial-time algorithm}\}
+\end{equation}
+\end{definition}
+Examples of problems contained within $P$ is most sorting algorithms, some graph algorithms etc.
+
+We call the class of problems for which a solution can be verified in polynomial time for $NP$. More formally the complexity class $NP$ has the language
+\begin{equation}
+  NP = \{\text{L: There exists an A, such that L is verified in polynomial time}\}
+\end{equation}
+i.e. the NP class consist of all the problem instances $L$ for which we can verify a solution using $A$ in polynomial time.
+
+A language $L$ is np-complete if 
+\begin{enumerate}
+  \item $L \in NP$
+  \item $L' \leq_p L \qquad \forall L' \in NP$ \label{prop2}
+\end{enumerate}
+In the case where only property \ref{prop2} is satisfied the problem is called \emph{np-hard}.
+
+Figure \ref{fig5} illustrates the 3 classes in a set manner.
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.5\textwidth]{figures/fig5.pdf}
+\caption{Set illustration of the 3 classes of problems. Note that both $P$ and $NPC$ is in $NP$, but they are disjoint i.e. this illustration assumes that $P \neq NP$}
+\label{fig5}
+\end{figure}
+
+
+\begin{theorem}
+Let $L_1$ and $L_2$ be languages such that $L_1 \leq_p L_2$. Then if $L_2 \in P$ then $L_1 \in P$  
+\label{theorem1}
+\end{theorem}
+
+\begin{proof}
+We know that $L_2$ can be solved in polynomial time. From \ref{eq15} we know that there exist a function $f$ such that $x \in L_1 \Leftrightarrow f(x) \in L_2$. For any $x \in L_1$ we can thus use the result $f(x) in L_2$ and find the answer to the instance $x$. $L_1$ can thus be solved in polynomial time.  
+\end{proof}
+
+\begin{theorem}
+If any NP-complete problem is solvable in polynomial time, all NP-complete problems are solvable in polynomial time.
+\end{theorem}
+
+\begin{proof}
+  Suppose that $L \in P$ and also that $L \in NPC$. For any $L' \in NP$ we have $L' \leq_p L$, by property \ref{prop2} of NP-completeness. Since $L \in P$ there must exist a polynomial algorithm. And by \ref{theorem1} this implies that $L' \in P$.
+\end{proof}
+
+
+% subsection definition_of_classes (end)
+
+\subsection{Example $HAM-CYCLE \leq_p TSP$} % (fold)
+\label{sub:subsection_name}
+In this example we wish to prove that it is very unlikely that a polynomial algorithm exist for the Traveling Salesman Problem (TSP). In fact, we wish to show that solving the TSP is at least as hard as solving the Hamiltonian cycle. We know that the Hamiltonian cycle problem is NP-complete. 
+
+Recall that a Hamilton cycle is a path in a undirected graph where each vertex is visited exactly once.
+
+Thus, if we can show that it is at least as has to solve TSP as to solve the Hamiltopnian cycle, we have shown that TSP is in the NP-completeness class. 
+
+Let the language of the TSP be defined as
+
+\begin{align*}
+TSP = \{\langle G, c, k \rangle : & G = (V,E) \text{ is a complete graph}, \\ 
+                                  & c:V \times V \rightarrow \Z, \\
+                                  & k \in \Z, \\
+                                  & \text{$G$ has a TSP tour of at most cost $k$}\}
+\end{align*}
+
+
+We need to show two things. First we need to show that the TSP decision problem is in the NP class. This can be shown by showing that TSP has a verification algorithm, that can verify an instance in polynomial time. 
+
+Let the verification algorithm check the sequence of vertices and sums the total cost and verifies this as being $\leq k$. Such a verification algorithm definitely exist, and can be run in polynomial time.
+
+The next thing we need to show is $HAM-CYCLE \leq_p TSP$. 
+
+Let $G=(V,E)$ be an instance of $HAM-CYCLE$. We can construct an instance of TSP as follows. Form the complete graph\footnote{A complete graph has a path from every vertex to all other vertices.} $G' = (V,E')$. Let the vertices in $V$ be the cities in the TSP. Let the cost function, $c(i,j)$ be defined by
+
+\begin{equation} 
+c(i,j) = 
+\left\{
+\begin{array}{rl} 
+  0 & \text{if } (i,j) \in E \\
+  1 & \text{if } (i,j) \notin E 
+\end{array} 
+\right. 
+\end{equation} 
+So if a edge resides in the Hamilton graph $G$, then it has cost $0$ in $G'$ otherwise $1$. An instance of TSP is thus a cycle in $G'$ with cost at most $0$.
+
+It is clear that we can construct $G'$ in polynomial time. We now show that $G$ contains a Hamilton cycle if and only if graph $G'$ has a tour of cost $0$. Suppose $G$ has a Hamilton cycle $h$. Each edge in $h$ resides in $G$ thus having cost $0$ in $G'$. Conversely, suppose $G'$ has a tour $h'$ of cost $0$, since the cost of the edges in $G'$ is $0$ and $1$, $h'$ can only occur if it traverses the edges of $G'$ with $0$ cost, thus $h'$ contains only edges from $E$.  
+
+
+We have now proven that finding 
+% subsection subsection_name (end)
 
 % section np_completeness (end)
 
 \section{Branch and Bound and Metaheuristics} % (fold)
 \label{sec:branch_and_bound_and_metaheuristics}
+
+
+\subsection{Examples of NP hard problems} % (fold)
+\label{sub:exmaples_of_np_hard_problems}
+
+% subsection exmaples_of_np_hard_problems (end)
+
+
+NP-hard problems can be solved to closed form by using an exact algorithm like branch and bound. They can be solved heuristically by using meta algorithms.
+
+The search space for NP-hard problems are extremely large, and solving problems exact means, to some extent that we need to traverse the whole search space. Solving heuristically means to traverse part of the search space, thereby gaining a speedup.
+
+
+
 Branch and Bound and Metaheuristics are  distributed notes ([Clausen] sections 1 and 2], [Luke] sections 0,1 and 2, [Fomin and Kratsch] chapter 1 and chapter 2).                                                                                                                                                          
 % section branch_and_bound_and_metaheuristics (end)
 
 \section{Approximation Algorithms} % (fold)
 \label{sec:approximation_algorithms}
-
 
 Approx Exam
 Vertex cover appeox 2
@@ -372,6 +690,8 @@ Similarly, in the exam you will not be required to give an account for the detai
 
 (b) at the same time the allowed error is so small, that although it may increase at each step, it still does not add to something which is so big that it violates the required approximation bound.
 
+Reason about vertex cover in factor 2.
+
 % section approximation_algorithms (end)
 
 \section{Randomized Algoritms} % (fold)
@@ -403,10 +723,10 @@ The worst case can be avoided by shuffling the list of candidates in a random pe
 
 ----------------
 
-For the exam you should read and try to understand Sections 5.1, 5.2 and 5.3, the material for the randomized algorithm for MAX-3-CNF in Section 35.4, and give an idea of applications of randomization to sorting (Quicksort, Section 7), Selection (Section 9.2), and binary search trees (Section 12.4).You will not be required to give proofs for expected bounds for Quicksort, Selection and binary search trees, but you should try to give an intuitive explanation for how/why randomization works in these cases.
+For the exam you should read and try to understand Sections 5.1, 5.2 and 5.3, the material for the randomized algorithm for MAX-3-CNF in Section 35.4, and give an idea of applications of randomization to sorting (Quicksort, Section 7), Selection (Section 9.2), and binary search trees (Section 12.4).
 
+You will not be required to give proofs for expected bounds for Quicksort, Selection and binary search trees, but you should try to give an intuitive explanation for how/why randomization works in these cases.
 You will not be required to give the full proofs of Lemma 5.4 and 5.5 as they are given in the book (unless you want it), but you should try to convince yourself that these Lemmas are true and try to be able to argue about it. 
-
 
 
 % section randomized_algoritms (end)
@@ -540,15 +860,175 @@ where $c$ is a positive constant. The max is introduced because the algorithm is
 
 % subsection marriage_before_conquest_mbc_ (end)
 
+
+\subsection{Chan and relations to MBC} % (fold)
+\label{sub:chan_and_relations_to_mbc}
+\todo{Make chan!}  
+The reading material for the Convex Hulls lecture consisted of the papers by Chan (2d case) and by Kirkpatrick\&Seidel, in addition to Section 33-3 in Cormen (see also the slides). In the exam you should be able to define the Convex Hull problem, you should know the underlying idea of the algorithms, and you should be able to argue for their correctness and running time.
+
+A series of different algorithms have been covered: Edge pruning, Graham's scan, Jarvis' march, Quickhull, Randomized Incremental, Divide and conquer, Marriage-before-conquest (Kirkpatrick-Seidel) and Chan's algorithm -- Chan's was covered in the exercises, and the others were covered in the lecture. The concept of convex hull as well as the worst-case and expected complexity of QuickHull were also covered in the exercises, and are relevant for the exam.
+
+The Marriage-before-conquest and Chan algorithms are the optimal algorithms, and hence also the most important -- you should be able to explain the basic underlying mechanisms and the structure of both algorithms. For Chan's algorithm you should be able to prove complexity and discuss the relation of Chan's algorithm with Jarvis march. For a good grade, you should also be able to argue for the complexity of the Marriage-before-conquest algorithm.
+
+% subsection chan_and_relations_to_mbc (end)
+
 % section computational_geometry_convex_hulls (end)
-
-
 
 
 \section{Computational Geometry, Delaunay triangulatiom} % (fold)
 \label{sec:computational_geometry_delaunay_triangulatiom}
-Computational Geometry, Delaunay triangulations (and Voronoi diagrams): From the  book Computational Geometry, Algorithms and Applications, Chapter 9,  Sections 9.1, 9.2, 9.3, available at http://www.cs.uu.nl/geobook  without the proofs.                                                                  
+
+
+\subsection{Applications} % (fold)
+\label{sub:applications}
+Triangulation is used in graphics and movies. It can also be used to model terrain when the terrain is represented as a bunch of sample points where each sample point is representing the height of the terrain compared to, lets say, sea level. A terrain visualized solely by height samples is not that interesting an doesn't look very natural! Instead we can do triangulation of the samples in 2D, and after the triangulation lift the points op in 3D yielding a triangulated surface, representing a terrain. 
+
+The central question here is how we triangulate the points? and if there are multiple methods how do we choose the method that gives us the most appropriate triangle net? In the following subsections we will answer these two questions.
+% subsection applications (end)applications
+
+
+\subsection{Definition} % (fold)
+\label{sub:definition}
+
+What do we mean by a good triangulation?
+Simple case is to connect one point to every other point. This is NOT a good triangulation. The ideal triangulation is a triabgulation that is ballanced, i.e. the we want to avoid small angles. 
+
+
+We define maximal planar subdivision as
+
+\begin{definition}
+Maximal planar subdivision: A subdivision $S$ such that no edge connecting two vertices can be added to $S$ without destroying it's planarity, i.e. any edge not in $S$ intersects and edge $e \in S$.  
+\end{definition}
+from the maximal planar subdivision we can define the triangulation as
+\begin{definition}
+Triangulation of set of points $P$: A maximal planar subdivision whose vertices are elements of $P$.  
+\end{definition}
+
+% subsection definition (end)
+
+
+\subsection{Edge flip} % (fold)
+\label{sub:edge_flip}
+Given two adjacent triangles $p_1 p_2 p_4$ and $p_2 p_3 p_4$, one can do an edge flip as follows. Remove the common edge by creating two new triangles consisting of $p_1 p_3 p_4$ and $p_1 p_2 p_3$. An illustration of an edge flip can be seen on figure \ref{fig6}.
+
+In the two adjacent triangles there are 6 angles. If we can increase the minimum angle by doing a edge flip on the shared edge, we called the shared edge illegal.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/fig6.pdf}
+\caption{Example of an edge flip}
+\label{fig6}
+\end{figure}
+
+Instead of checking wether an edge is illegal by computing all the angles, we can use the following observation
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig7.pdf}
+\caption{If $p_1$ is inside the circumcircle then the edge between the two triangles is illegal an we perform an edge flip.}
+\label{fig7}
+\end{figure}
+% subsection edge_flip (end)
+
+
+\subsection{Delaunay triangulation} % (fold)
+\label{sub:delaunay_triangulation}
+The Delaunay triangulation for a set of points $P$ is a triangulation where no point $p_i \in P$ is inside the circumcircle of any triangle in the triangulation set. The Delaunay triangulation is actually the dual of the Voronoi diagram. figure \ref{fig8} shows this relation. 
+
+The Voronoi diagram is shown as red on figure \ref{8}, while the triangulation is shown as black. A line in the Voronoi diagram separating two vertices, indicates that there is an edge between the two vertices in the triangulation.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig8.png}
+\caption{Duality between the Delaunay triangulation and the Voronoi diagram.}
+\label{fig8}
+\end{figure}
+
+Returning to the legal and illegal edges. Let $P$ be a set of points in the plane then a triangulation of $P$ is legal, \emph{if and only if}, the triangulation is a Delaunay triangulation.
+% subsection delaunay_triangulation (end)
+
+
+\subsection{Naive method} % (fold)
+\label{sub:naive_method}
+
+% subsection naive_method (end)
+
+
+\subsection{Computing the Delaunay triangulation} % (fold)
+\label{sub:computing_the_delaunay_triangulation}
+The algorithm is randomized incremental.
+
+
+Figure \ref{fig9} shows how the datastructure is maintained when splitting existing triangles and flipping edges.
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig9.pdf}
+\caption{Example of maintaining a datastructure when flipping edges and dividing triangles.}
+\label{label}
+\end{figure}
+
+(i) Convex hull not a triangle, in this case we add an atificial triangle (BIG) wthich sourounds everything. The triangle should be so big that no circle of the points is outside the triangle face <- Pretend this step. Result is that the convex hull of the points are still intact.
+
+How to localize a new point: Datastructure consist of triangles (there three points) and doubly conected list of adjacent triangles (At most three). One node for each triangle
+
+
+The expected number of edge flips is only linear, worst case is quadratic.
+
+
+% subsection computing_the_delaunay_triangulation (end)
+
+
+
+
+
+
+Angle optimal triangulations
+
+Let $P = \{p_1,p_2,\ldots,p_n\}$ be $n$ points in the plane. we 
+The definition of 
+Given a set of points, \emph{take the convex hull}, add diagonals (edges that connects vertices), without crossing thoose we already have drawn, until there are no more vertices. The result is a triangulation. I.e. we partition the points into triangles.
+
+Not efficient method, edge flip.
+Check that a local triangulation is a delaunay triangulation (Draw circle). Edge flip when the circle is not empty. 
+
+Randomized algorithm.
+Proposed in the book, incremental edge-flipping algorithm, adding one point at a time.
+
+Edge flips always results in edges connected to the newly added point.
+
+
+
+Computational Geometry, Delaunay triangulations (and Voronoi diagrams): From the  book Computational Geometry, Algorithms and Applications, Chapter 9,  Sections 9.1, 9.2, 9.3, and Theorem 9.12 from Section 9.4, available at http://www.cs.uu.nl/geobook,  without the proofs.
+
+                                       
 % section computational_geometry_delaunay_triangulatiom (end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
