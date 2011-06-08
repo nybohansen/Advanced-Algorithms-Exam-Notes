@@ -619,6 +619,17 @@ We have now proven that finding
 % subsection exmaples_of_np_hard_problems (end)
 
 
+\subsection{Branch and reduce} % (fold)
+\label{sub:branch_and_reduce}
+Maximum independent set as example
+% subsection branch_and_reduce (end)
+
+
+
+\subsection{Branch and bound} % (fold)
+\label{sub:branch_and_bound}
+TSP as an example
+% subsection branch_and_bound (end)
 NP-hard problems can be solved to closed form by using an exact algorithm like branch and bound. They can be solved heuristically by using meta algorithms.
 
 The search space for NP-hard problems are extremely large, and solving problems exact means, to some extent that we need to traverse the whole search space. Solving heuristically means to traverse part of the search space, thereby gaining a speedup.
@@ -690,7 +701,7 @@ Similarly, in the exam you will not be required to give an account for the detai
 
 (b) at the same time the allowed error is so small, that although it may increase at each step, it still does not add to something which is so big that it violates the required approximation bound.
 
-Reason about vertex cover in factor 2.
+Reason about vertex cover is factor 2.
 
 % section approximation_algorithms (end)
 
@@ -893,9 +904,34 @@ The central question here is how we triangulate the points? and if there are mul
 What do we mean by a good triangulation?
 Simple case is to connect one point to every other point. This is NOT a good triangulation. The ideal triangulation is a triabgulation that is ballanced, i.e. the we want to avoid small angles. 
 
+We define angle optimality as follows.
+
+Let $T$ be a triangulation of $P$. Let $T$ consist of $m$ triangles. Then $T$ has $3m$ angles. Let the angles be in a sorted vector in increasing order. Denote this vector $A(T)$ We call this vector an \emph{angle vector}. Let $T'$ be another triangulation of $P$. We say that $T$ is \emph{angel-optimal} if $T$ is lexicographically larger than $\forall T'\in P$.
+
+Lexicographically larger means that for some index $i$ the angles after $i$ in $A(T)$ is larger than the angels in $A(T')$. E.g.
+
+\begin{equation} 
+\left(
+\begin{array}{r} 
+   1  \\
+   3 \\
+   5 \\
+   7 
+\end{array} 
+\right) >   
+\left(
+\begin{array}{r} 
+   1  \\
+   2 \\
+   5 \\
+   7 
+\end{array} 
+\right)
+\end{equation} 
+the reason for this definition, is we want as uniform angles as possible in all triangles.
+
 
 We define maximal planar subdivision as
-
 \begin{definition}
 Maximal planar subdivision: A subdivision $S$ such that no edge connecting two vertices can be added to $S$ without destroying it's planarity, i.e. any edge not in $S$ intersects and edge $e \in S$.  
 \end{definition}
@@ -905,6 +941,7 @@ Triangulation of set of points $P$: A maximal planar subdivision whose vertices 
 \end{definition}
 
 % subsection definition (end)
+
 
 
 \subsection{Edge flip} % (fold)
@@ -935,7 +972,7 @@ Instead of checking wether an edge is illegal by computing all the angles, we ca
 \label{sub:delaunay_triangulation}
 The Delaunay triangulation for a set of points $P$ is a triangulation where no point $p_i \in P$ is inside the circumcircle of any triangle in the triangulation set. The Delaunay triangulation is actually the dual of the Voronoi diagram. figure \ref{fig8} shows this relation. 
 
-The Voronoi diagram is shown as red on figure \ref{8}, while the triangulation is shown as black. A line in the Voronoi diagram separating two vertices, indicates that there is an edge between the two vertices in the triangulation.
+The Voronoi diagram is shown as red on figure \ref{fig8}, while the triangulation is shown as black. A line in the Voronoi diagram separating two vertices, indicates that there is an edge between the two vertices in the triangulation.
 
 \begin{figure}[ht]
 \centering
@@ -950,55 +987,44 @@ Returning to the legal and illegal edges. Let $P$ be a set of points in the plan
 
 \subsection{Naive method} % (fold)
 \label{sub:naive_method}
+Given a set of points, \emph{take the convex hull}, add diagonals (edges that connects vertices), without crossing those we already have drawn, until there are no more vertices. The result is a triangulation. I.e. we partition the points into triangles.
+
+In order to make the triangulation into a Delaunay triangulation, we can do edge flips until there are no more illegal edges.
+
+
+The most straightforward way of efficiently computing the Delaunay triangulation is to repeatedly add one vertex at a time, retriangulating the affected parts of the graph. When a vertex v is added, we split in three the triangle that contains v, then we apply the flip algorithm. Done naively, this will take O(n) time: we search through all the triangles to find the one that contains v, then we potentially flip away every triangle. Then the overall runtime is O(n2).
 
 % subsection naive_method (end)
 
 
 \subsection{Computing the Delaunay triangulation} % (fold)
 \label{sub:computing_the_delaunay_triangulation}
-The algorithm is randomized incremental.
+The algorithm is randomized incremental algorithm, adding one point at a time.
 
+Let $P$ be the set of points we want to triangulate. Find the point with the highest $y$ coordinate, and name this point $p_0$. Make a big triangle, that contains all the points in $P$ such that $p_0$ is one of the corners in the triangle. 
 
-Figure \ref{fig9} shows how the datastructure is maintained when splitting existing triangles and flipping edges.
+Now pick a random point from $P$ and add it to the big triangle, such that the big triangle is divided into $3$ sub triangles. Run a legalize edge procedure, ensuring that all the edges are legalized.
+
+Keep adding points from the set $P$, and legalize the edges of until $P$ is empty. 
+
+As a final stage remove the points $p_{-1}$ and $p_{-2}$ along with the incident edges. 
+
+THe data structure used is a point location structure. It is a tree like structure where the nodes defines the position of previous triangles and the leafs corresponding to the current visible triangles. 
+
+Given a point the data structure makes it possible to locate the triangle of which the point is placed upon. 
+
+Figure \ref{fig9} shows how the data structure is maintained when splitting existing triangles and flipping edges.
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/fig9.pdf}
-\caption{Example of maintaining a datastructure when flipping edges and dividing triangles.}
-\label{label}
+\includegraphics[width=0.6\textwidth]{figures/fig9.pdf}
+\caption{Example of maintaining a data structure when flipping edges and dividing triangles.}
+\label{fig9}
 \end{figure}
 
-(i) Convex hull not a triangle, in this case we add an atificial triangle (BIG) wthich sourounds everything. The triangle should be so big that no circle of the points is outside the triangle face <- Pretend this step. Result is that the convex hull of the points are still intact.
-
-How to localize a new point: Datastructure consist of triangles (there three points) and doubly conected list of adjacent triangles (At most three). One node for each triangle
-
-
-The expected number of edge flips is only linear, worst case is quadratic.
+The \emph{expected} running time of the algorithm is $\O(n\log(n))$. This can be explained as, it takes constant time to create new triangles the maximal number of triangles created is $\O(n)$. When identifying the triangle in which a point is located, we use the point location data structure, and can make this identification in $\O(\log(n))$.
 
 
 % subsection computing_the_delaunay_triangulation (end)
-
-
-
-
-
-
-Angle optimal triangulations
-
-Let $P = \{p_1,p_2,\ldots,p_n\}$ be $n$ points in the plane. we 
-The definition of 
-Given a set of points, \emph{take the convex hull}, add diagonals (edges that connects vertices), without crossing thoose we already have drawn, until there are no more vertices. The result is a triangulation. I.e. we partition the points into triangles.
-
-Not efficient method, edge flip.
-Check that a local triangulation is a delaunay triangulation (Draw circle). Edge flip when the circle is not empty. 
-
-Randomized algorithm.
-Proposed in the book, incremental edge-flipping algorithm, adding one point at a time.
-
-Edge flips always results in edges connected to the newly added point.
-
-
-
-Computational Geometry, Delaunay triangulations (and Voronoi diagrams): From the  book Computational Geometry, Algorithms and Applications, Chapter 9,  Sections 9.1, 9.2, 9.3, and Theorem 9.12 from Section 9.4, available at http://www.cs.uu.nl/geobook,  without the proofs.
 
                                        
 % section computational_geometry_delaunay_triangulatiom (end)
