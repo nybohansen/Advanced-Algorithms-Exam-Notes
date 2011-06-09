@@ -22,7 +22,7 @@
 \maketitle 
 
 \tableofcontents
-
+\clearpage \newpage
 \section{Max Flow} % (fold)
 \label{sec:max_flow}
 
@@ -369,6 +369,10 @@ a flow chart of the simplex can be seen in figure \ref{fig4}
 \label{fig4}
 \end{figure}
 
+\subsubsection{Cycling} % (fold)
+\label{ssub:cycling}
+There is a risk that SIMPLEX cycles. This means that we at some point arrive at the same slack state as we have visited before. Cycling can be avoided by always choosing the entering variable with the smallest index, and furthermore if there are multiple exiting variables, always choose the one with the lowest index.
+% subsubsection cycling (end)
 
 % subsection simplex_algorithm (end)
 
@@ -470,7 +474,6 @@ In order to prove the above, we have to show that $\bar{y*}$ is a feasible solut
 % section linear_programming (end)
 
 \clearpage \newpage
-
 \section{NP-completeness} % (fold)
 \label{sec:np_completeness}
 
@@ -608,9 +611,14 @@ We have now proven that finding
 % subsection subsection_name (end)
 
 % section np_completeness (end)
-
+\clearpage \newpage
 \section{Branch and Bound and Metaheuristics} % (fold)
 \label{sec:branch_and_bound_and_metaheuristics}
+
+tegn et træ, cut løsninger væk, find god lower bound
+
+
+Hill climbing, simulated annealing. Tabu search er central
 
 
 \subsection{Examples of NP hard problems} % (fold)
@@ -638,7 +646,7 @@ The search space for NP-hard problems are extremely large, and solving problems 
 
 Branch and Bound and Metaheuristics are  distributed notes ([Clausen] sections 1 and 2], [Luke] sections 0,1 and 2, [Fomin and Kratsch] chapter 1 and chapter 2).                                                                                                                                                          
 % section branch_and_bound_and_metaheuristics (end)
-
+\clearpage \newpage
 \section{Approximation Algorithms} % (fold)
 \label{sec:approximation_algorithms}
 
@@ -704,44 +712,118 @@ Similarly, in the exam you will not be required to give an account for the detai
 Reason about vertex cover is factor 2.
 
 % section approximation_algorithms (end)
-
-\section{Randomized Algoritms} % (fold)
+\clearpage \newpage
+\section{Randomized Algorithms} % (fold)
 \label{sec:randomized_algoritms}
-Randomized Algoritms - CLRS, Sections  5.1, 5.2, 5.3; 7.3, 9.2, 12.4, 35.4 (first part); (without the details of the probabilistic proofs in 7.3, 9.2 and 12.4)                                                                                                                                                    
+Randomized algorithms, are algorithms that seeks to eliminate the possibility that `your worst' enemy gives you a input such that the algorithm runs slowly.
 
-Some problems can be solved in a simple way by using randomization. E.g. median finding. 
+\subsection{Hiring problem} % (fold)
+\label{sub:hiring_problem}
+Say we want to hire a person. We have a external company that gives us the names of the candidates we wish to interview. Each candidate is assigned an integer value describing how good the candidates qualifications are. If the candidate is better qualified i.e. here value is greater than the candidate we presently have, she is hired.
 
-In median finding there is a linear algorithm that finds it deterministic, but a randomized algorithm is actual more efficient.
+Each time we hire a candidate it cost us money. Interviewing has zero cost.
 
-Affordability: Walking in a maze, in an "oblivious" manner i.e. we don't remember where we have been/walked until a certain point. At any node flip a coin to determine the direction. By doing this enough times you're guaranteed to sooner or later to arrive at the destination/goal. Such walks are called "random walks". 
+Now we want to minimize the total cost, when interviewing $n$ candidates. We need to interview all candidates, but every time a new candidate with better qualifications comes around, we need to hire her, and fire the previous. If we have no control over the ordering the candidates arrive in, we risk the situation where the candidates arrive in sorted increasing order by their value. This would mean that we would have to hire all $n$ candidates! The worst case is thus a total cost of $\O(cn)$ where $c$ is the cost of hiring a single candidate.
 
+A randomized approach to this problem would be to receive the full list of candidates from the external company, randomize the list, and call in the candidates in the randomized order. This would eliminate the possibility that the candidates where interviewed in a predetermined manner.
 
-Hiring problem: A way to model certain procedures, so can determine the worst case, expected cost and how we can use randomization to avoid worst case.
+Because the candidates arrive in randomized order, and each candidate is equally likely to be the best, we have that the probability that the $i'th$ candidate is hired can be expressed as $1/i$.
 
-
-We want to hire a person. We have $n$ candidates. We interview each candidate, and if candidate $i$ is better than the previous best, we hire him.
-
-The worst case is we hire all candidates, cost is thus $n$.
-
-Expected hiring cost preciesly after the i'th interview is $1/i$
-
-Expected total cost is $1+1/2+1/3+...+1/n \approx ln(n)$.
+From the harmonic series we have the cost as $1/1+1/2+1/3+\ldots+1/n \approx ln(n)$ which is also the \emph{expected} cost of the algorithm. 
 
 In order to arrive at this result we used the \emph{linearity of expectations}. Linearity of expectations means that the expected value of a sum equals the expected value of each i'th terms of the sum. Dice example.Throwing a dice yields a number in the interval $1-6$. The expected number is $3,5$. Throw the dice 10 times then the expected sum will be 35. This holds only for summation not products. For products it only holds for unrelated events (iid).
 
-The worst case can be avoided by shuffling the list of candidates in a random permutation.
+
+% subsection hiring_problem (end)
+
+\subsection{Randomization} % (fold)
+\label{sub:randomization}
+Many algorithms take as input an array of data. This data can be randomized in several ways. Two methods are described here. In both cases it is worth noticing that the probability of the random generator is uniform! 
+
+\subsubsection{Permute by sorting} % (fold)
+\label{ssub:permute_by_sorting}
+Permute by sorting works in the following way. Generate a new array, $P$, with length $n$ where $n$ is the length of the input array $A$. Each entry in $P$ has a random value in the range $[1,n^3]$. Now sort $A$ by the keys of $P$. The complexity of this algorithm is as follows. Generating $P$ takes $\O(n)$. Sorting can be done in $\O(n\log(n))$. The total complexity is thus $\O(n+n\log(n)) = \O(n\log(n))$.
+
+An example of the algorithm is as follows. Given $A = \langle 1,2,3,4\rangle$, we compute $P = \langle 36, 3, 62, 19\rangle$. By sorting $A$ with the keys in $P$ we arrive at $A = \langle 2, 4, 1, 3 \rangle$.
+% subsubsection permute_by_sorting (end)
+
+\subsubsection{Randomize in place} % (fold)
+\label{ssub:randomize_in_place}
+Randomize in place works as follows. Given an array $A$, we swap the $i'th$ element of $A$ with a element picked randomly from the interval $[i,n]$ where $n$ is the number of elements in $A$. This randomization algorithm runs in $\O(n)$.
+% subsubsection randomize_in_place (end)
+
+% subsection randomization (end)
 
 
-----------------
+\subsection{Quicksort} % (fold)
+\label{sub:quicksort}
+Quicksort has a worst case running time of $\O(n^2)$. This running time occurs, when the pivot is chosen as the largest element at every iteration. In order to accommodate this problem we can randomize the way we choose the pivot.
 
-For the exam you should read and try to understand Sections 5.1, 5.2 and 5.3, the material for the randomized algorithm for MAX-3-CNF in Section 35.4, and give an idea of applications of randomization to sorting (Quicksort, Section 7), Selection (Section 9.2), and binary search trees (Section 12.4).
+The changes to quicksort are small. Instead of always choosing the element in the last position of the array we are currently working on, then choose the pivot at random. We thus swap the last element with a random element from the array and choses this. The only change to the quicksort algorithm is thus the swap procedure. The expected running time is now $\O(n\log(n))$.
+% subsection quicksort (end)
 
-You will not be required to give proofs for expected bounds for Quicksort, Selection and binary search trees, but you should try to give an intuitive explanation for how/why randomization works in these cases.
-You will not be required to give the full proofs of Lemma 5.4 and 5.5 as they are given in the book (unless you want it), but you should try to convince yourself that these Lemmas are true and try to be able to argue about it. 
 
+\subsection{Selection algorithm} % (fold)
+\label{sub:selection_algorithm}
+Randomized select is a randomization algorithm that finds the $i'th$ smallest element in time $\O(n)$. It relies on the randomized partition function also used in quicksort.
+
+The algorithm is recursive and selects a part of the total array where it knows the $i'th$ smallest element is in. Following is the algorithm
+\begin{verbatim}
+Randomized Select(A, p, r, i){
+  if p==r                                       <- Base case
+      return A[p]
+  q = randomized_partition(A,p,r)               <- Partition A, q is index into the 
+  k = q-p+1                                     <- k is the 
+  if k==i
+      return A[q]                               <- BINGO
+  elseif i<k
+      return Randomized Select(A, p, q-1, i)    <- Look in the left part
+  else   
+      return Randomized Select(A, q+1, r, i-k)  <- Look in the right part
+}  
+\end{verbatim}
+The algorithm starts by checking if the list only consist of $1$ element. Otherwise it does a randomized partition of the list and returning the index of the partitioning in $q$. $k$ can be interpreted as the number of elements between $p$ and $q$. If $k=i$ then we know that the we have found the element, and the element is the same as the pivot element.
+
+If $i<k$ then we know that the $i'th$ element is to the left of the pivot element. We recursively call the function of this part of the list, discarding the current pivot element.
+
+If $i>k$ then we know that the $i'th$ element must lie behind the pivot element, and we thus look at this part of the list. When looking at the right hand side of the list, we need to change $i$ so it becomes $i = i-k$.
+
+Figure \ref{fig10} shows an example run of the algorithm. The expected running time of the algorithm is $\O(n)$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.6\textwidth]{figures/fig10.pdf}
+\caption{Example run of the randomized select algorithm}
+\label{fig10}
+\end{figure}
+
+% subsection selection_algorithm (end)
+
+
+\subsection{Binary search tree} % (fold)
+\label{sub:binary_search_tree}
+A binary search tree is a tree where each node has either none, one or two children. A child positioned to the left of a node has a value less than the node, and a child positioned to the right of a node has a value greater than the node.
+
+The height of the binary search has direct impact of the time it takes to search, insert and delete nodes. Therefore it is desirable that the height is as small as possible, i.e. the binary tree must be balanced.
+
+A binary search tree can be built from an array of values. The first element of the array becomes the root of the tree. The second element becomes a child of the root, and is positioned to the left if it is lesser than the root node, otherwise it is positioned to the right. This procedure poses a problem. If your worst enemy gave you a an array sorted in increasing\footnote{or decreasing, the height is still $n$} order the binary search tree would have height $n$, where $n$ is the number of elements in the array. This is not tractable! 
+
+The reason is that whenever a new node is inserted to the search tree it is positioned to the right, because the element being inserted is greater than all other elements inserted. An illustration can be seen on figure \ref{fig11}
+
+We can accommodate this problem, by either choosing the element to insert randomly from the array, or totally randomize the array before inserting.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig11.pdf}
+\caption{Illustration of the difference in height, when using the randomized version, compared to the original version.}
+\label{fig11}
+\end{figure}
+
+% subsection binary_search_tree (end)
 
 % section randomized_algoritms (end)
 
+\clearpage \newpage
 \section{Computational Geometry, Convex hulls} % (fold)
 \label{sec:computational_geometry_convex_hulls}
 Computational Geometry, Convex  hulls, CLRS,  Chapter 33.3 and the papers by [Kirkpatrick\&Seidel] and [Chan] (only 2D case in both articles).
@@ -874,7 +956,9 @@ where $c$ is a positive constant. The max is introduced because the algorithm is
 
 \subsection{Chan and relations to MBC} % (fold)
 \label{sub:chan_and_relations_to_mbc}
-\todo{Make chan!}  
+\todo{Make chan!} 
+
+ 
 The reading material for the Convex Hulls lecture consisted of the papers by Chan (2d case) and by Kirkpatrick\&Seidel, in addition to Section 33-3 in Cormen (see also the slides). In the exam you should be able to define the Convex Hull problem, you should know the underlying idea of the algorithms, and you should be able to argue for their correctness and running time.
 
 A series of different algorithms have been covered: Edge pruning, Graham's scan, Jarvis' march, Quickhull, Randomized Incremental, Divide and conquer, Marriage-before-conquest (Kirkpatrick-Seidel) and Chan's algorithm -- Chan's was covered in the exercises, and the others were covered in the lecture. The concept of convex hull as well as the worst-case and expected complexity of QuickHull were also covered in the exercises, and are relevant for the exam.
@@ -885,7 +969,7 @@ The Marriage-before-conquest and Chan algorithms are the optimal algorithms, and
 
 % section computational_geometry_convex_hulls (end)
 
-
+\clearpage \newpage
 \section{Computational Geometry, Delaunay triangulatiom} % (fold)
 \label{sec:computational_geometry_delaunay_triangulatiom}
 
@@ -976,7 +1060,7 @@ The Voronoi diagram is shown as red on figure \ref{fig8}, while the triangulatio
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/fig8.png}
+\includegraphics[width=0.7\textwidth]{figures/fig8.png}
 \caption{Duality between the Delaunay triangulation and the Voronoi diagram.}
 \label{fig8}
 \end{figure}
@@ -1016,7 +1100,7 @@ Given a point the data structure makes it possible to locate the triangle of whi
 Figure \ref{fig9} shows how the data structure is maintained when splitting existing triangles and flipping edges.
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.6\textwidth]{figures/fig9.pdf}
+\includegraphics[width=0.75\textwidth]{figures/fig9.pdf}
 \caption{Example of maintaining a data structure when flipping edges and dividing triangles.}
 \label{fig9}
 \end{figure}
@@ -1028,35 +1112,6 @@ The \emph{expected} running time of the algorithm is $\O(n\log(n))$. This can be
 
                                        
 % section computational_geometry_delaunay_triangulatiom (end)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 \end{document}
