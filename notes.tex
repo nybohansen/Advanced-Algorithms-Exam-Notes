@@ -531,6 +531,8 @@ We call the class of problems for which a solution can be verified in polynomial
 \end{equation}
 i.e. the NP class consist of all the problem instances $L$ for which we can verify a solution using $A$ in polynomial time.
 
+A problem is in $co-NP$ if it's compliment is in $NP$. The complement of a decision problem, is the negation of the decision problem (interchange the yes/no). 
+
 A language $L$ is np-complete if 
 \begin{enumerate}
   \item $L \in NP$
@@ -564,7 +566,7 @@ If any NP-complete problem is solvable in polynomial time, all NP-complete probl
   Suppose that $L \in P$ and also that $L \in NPC$. For any $L' \in NP$ we have $L' \leq_p L$, by property \ref{prop2} of NP-completeness. Since $L \in P$ there must exist a polynomial algorithm. And by \ref{theorem1} this implies that $L' \in P$.
 \end{proof}
 
-\todo{Write something about co-NP}
+
 
 % subsection definition_of_classes (end)
 
@@ -618,30 +620,79 @@ We have now proven that finding
 
 tegn et træ, cut løsninger væk, find god lower bound
 
-
 Hill climbing, simulated annealing. Tabu search er central
 
 
-\subsection{Examples of NP hard problems} % (fold)
-\label{sub:exmaples_of_np_hard_problems}
-
-% subsection exmaples_of_np_hard_problems (end)
-
-
-\subsection{Branch and reduce} % (fold)
-\label{sub:branch_and_reduce}
-Maximum independent set as example
-% subsection branch_and_reduce (end)
-
-
-
-\subsection{Branch and bound} % (fold)
-\label{sub:branch_and_bound}
-TSP as an example
-% subsection branch_and_bound (end)
+\subsection{Motivation} % (fold)
+\label{sub:motivation}
 NP-hard problems can be solved to closed form by using an exact algorithm like branch and bound. They can be solved heuristically by using meta algorithms.
 
-The search space for NP-hard problems are extremely large, and solving problems exact means, to some extent that we need to traverse the whole search space. Solving heuristically means to traverse part of the search space, thereby gaining a speedup.
+The search space for NP-hard problems are extremely large, and solving problems exact means, to some extent, that we need to traverse the whole search space. Solving heuristically means to traverse part of the search space, thereby gaining a speedup. 
+
+By using branch and bound we are trying not to visit the whole solution space, but instead only visit the solution space where we know an optimal solution could reside.
+
+Strong points : 
+NP problems
+Greedy/Dynamic algorithms
+overview on what we try to accomplish
+\todo{write some motivation on branch and bound}
+% subsection motivation (end)
+
+
+\subsection{Branching} % (fold)
+\label{sub:branching}
+The branch part of the Branch and Bound algorithm divides the problem into subproblems
+
+In order to illustrate branching we can use the problem of finding the independent set in a graph. 
+
+Given a graph $G = (V,E)$ the independent set is the set of vertices $I \subset S$, such that for every vertex in $I$ none of it's neighbors in $V$ are in $I$. I.e. each edge in $E$ has at most one endpoint in $I$. The maximal independent set, is a set independent set where $|I|$ is maximized.
+
+A trivial algorithm to find such a set, is to construct all possible solutions by permutation, and check if it is a independent set. The running time can be calculated from the following observation. Each vertex in the graph can either be included in the set or not included in the set. For each vertex we thus have 2 possibilities. Given $n$ vertices this yields a running time of $\O(2^n)$!
+
+Another approach is to use a branching algorithm. The branching algorithm works as follows. Given a graph $G = (V,E)$ pick a vertex, $v$ with minimum degree\footnote{A degree of a vertex $v$ is the number of adjacent edges to $v$}. Let the set of neighbors to $v$ be defined as $N[v]$. For each vertex $j \in N[V]$ do a branch on the set $G \setminus N[j]$.
+
+The running time of this procedure can be calculated as the number of nodes in the search tree $T$. The algorithm picks the vertex with the minimum degree and branches on itself and it's neighbors. We thus have
+
+\begin{equation}
+  T(n) \leq 1 + T(n-d(v)-1) + \sum_{i=1}^{d(v)} T(n-d(v_i)-1)
+\end{equation}
+where $d(v_i)$ is the degree of the $i'th$ neighboring vertex. 
+
+Since the algorithm always chooses the vertex with minimum degree we have $T(n-d(v)-1) \geq T(n-d(v_i)-1)$. so
+\begin{align}
+T(n) &\leq 1 + T(n-d(v)-1) + \sum_{i=1}^{d(v)} T(n-d(v_i)-1) \\
+     &\leq 1 + T(n-d(v)-1) + \sum_{i=1}^{d(v)} T(n-d(v)-1)   \\
+     &= 1 + \sum_{i=1}^{d(v)+1} T(n-d(v)-1)                  \\
+     &= 1 + (d(v)+1)T(n-d(v)-1)          
+\end{align}
+now let $s = d(v)+1$ then we have
+\begin{equation}
+  t(n) \leq 1 + sT(n-s)          
+\end{equation}
+expanding this recurrence yields
+\begin{equation}
+  t(n) \leq 1 + sT(n-s) \leq 1 + s + s^2+s^3+\ldots+s^{n/s}  \label{brancheq1}       
+\end{equation}
+this follows from the observation, that we subtract $s$ from $n$ at each recursive step, so the maximal number of recursive steps is $n/s$. \ref{brancheq1} is a harmonic series and can be written as $\O(s^{n/s})$.
+% subsection branching (end)
+
+
+\subsection{Bounding} % (fold)
+\label{sub:bounding}
+The bounding part of the Branch and Bound algorithm gives a lower (or upper depending on the objective) bound of the solution based on subproblems.
+
+demonstrating how it works on a simple graph, including exp. on live nodes. Presenting one of the methods, 1-tree or LP 
+(here is another source for 1-tree \url{http://www-e.uni-magdeburg.de/mertens/TSP/node4.html\#sec:onetree} )
+Arguing and maybe proving why is that lower-bound .
+% subsection bounding (end)
+
+
+\subsection{Heuristics} % (fold)
+\label{sub:heuristics}
+Discussing on the types of representations (permutation etc. ) 
+Showing the local maximum issue on hill-climbing 
+presenting one advanced methods and mentioning the others.
+% subsection heuristics (end)
 
 
 
@@ -813,9 +864,14 @@ For the approximation ratio for the greedy SET-COVER algorithms, another simpler
 
 Namely, if $r$ is the number of remaining uncovered elements, the next set selected by the greedy algorithm covers at least $r/OPT$ elements, where $OPT$ denotes the number of sets in the optimal solution (i.e. the minimum). 
 
-This argument alone suffices to conclude that when the greedy algorithm selects at most $OPT$ sets, at least half of the remaining uncovered elements are covered. Repeating this argument recursively, yields that all elements are covered after selecting greedily at most $OPT$ times $\O(log n)$ sets.
+This argument alone suffices to conclude that when the greedy algorithm selects at most $OPT$ sets, at least half of the remaining uncovered elements are covered. Repeating this argument recursively, yields that all elements are covered after selecting greedily at most $OPT \O(log n)$ sets.
 
 Let $n$ denote the number of elements. In the first iteration we would pick $\geq n/opt$, there would be at least $n-n/opt=n(1-1/opt)$ points left. In the second iteration we would pick at least $n(1-1/opt)/opt$
+
+
+\url{http://pages.cs.wisc.edu/~shuchi/courses/787-F07/scribe-notes/lecture02.pdf}
+
+\todo{Read and understand}
 
 % subsection set_covering_problem (end)
 
@@ -1038,17 +1094,24 @@ We denote the convex hull of a set $S$ to be $CH(S)$. There exists several algor
 \label{sub:grahams_scan}
 Grahams scan has a running time of $\O(n\log(n))$. It starts by choosing a the point $p_0 \in S$, with the lowest $y$-coordinate. This can be done in $\O(n)$. It then sorts the remaining points $p_i \in S$ by the angle between the line $(p_0, p_i)$ and the $x$-axis. This sorting can be done in $n \log(n)$ by e.g. heap sort\footnote{Heap sort uses a heap, i.e. a tree datastructure where the largest element is on top.} 
 
-Put $p_0, p_1, p_2$ in the list of nodes that constitutes the convex hull. If making a left turn when adding $p_3$, remove $p_2$ and add $p_3 to the list$. Otherwise if making a right turn, add $p_3$ to the list. Continue adding nodes. If adding node $p_j$ creates a left turn, then remove node $p_{j-1}$ and add $p_j$. Otherwise just add $p_j$. When last node has been reached, the convex hull is done.
+Put $p_0, p_1, p_2$ in the list of nodes that constitutes the convex hull. If making a left turn when adding $p_3$, remove $p_2$ and add $p_3$ to the list. Otherwise if making a right turn, add $p_3$ to the list. Continue adding nodes. In general, if adding node $p_j$ creates a left turn, then remove node $p_{j-1}$ and add $p_j$. Otherwise just add $p_j$. When last node has been reached, the convex hull is done.
 
 The correctness of Grahams scan can be explained by the following observations. 
 
 \begin{itemize}
   \item Grahams scan will never go backwards behind the initial node. 
-  \item When ariving at point $p_i$ all points between the initial node and the point $p_i$ are right turns on the polygonal line constructed so far
+  \item When arriving at point $p_i$ all points between the initial node and the point $p_i$ are right turns on the polygonal line constructed so far
   \item After arriving at the initial node by a right turn, we get a polygonal line consisting of purely right turns. 
 \end{itemize}
 
+Figure \ref{fig16} shows an example run of Grahams scan.
 
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig16.pdf}
+\caption{Example run of Grahams scan}
+\label{fig16}
+\end{figure}
 
 The time complexity is $\O(n\log(n))$ since sorting takes $\O(n\log(n))$ and the scanning takes $\O(n)$, since each point is only considered once. The total time complexity is thus $\O(n\log(n)+n)=\O(n\log(n))$.
 
@@ -1056,11 +1119,22 @@ The time complexity is $\O(n\log(n))$ since sorting takes $\O(n\log(n))$ and the
 
 \subsection{Jarvis' march} % (fold)
 \label{sub:jarvis_march}
-Jarvis' march is also knows as the `Giftwrapping algorithm'. It has a complexity of $\O(nh)$, where $n$ is the number of nodes, and $h$ is the number of nodes in the convex hull. Since part of the complexity relies on the final output, the algorithm is \emph{output sensitive}.
+Jarvis' march is also knows as the `Giftwrapping algorithm'. It has a complexity of $\O(nh)$, where $n$ is the number of nodes, and $h$ is the number of nodes in the convex hull. Since part of the complexity relies on the final output, the algorithm is \emph{output sensitive} and can be $\O(n^2)$ when $h=n$.
 
 Find the point, $p_0$, which is placed leftmost. This point can be found in $\O(n)$. Add $p_o$ to the convex hull list. Now find the point $p_1$ which has every other point $p_i$ to the right and add it to the list of convex hull nodes. This can also be done in $\O(n)$ by comparing polar angles from $p_0$. Continue to add $p_i$ to the list such that every other node is to the right of $p_i$. Continue until the $p_i=p_0$.
 
 The complexity of Jarvis' march can be computed as the time it takes to find $p_i$ times the number of nodes, $h$ in the convex hull. The complexity is thus $\O(nh)$.
+
+An example run of Jarvis' march can be seen on figure \ref{fig17}
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig17.pdf}
+\caption{Example run of Jarvis' march. The dotted lines are the polar angles}
+\label{fig17}
+\end{figure}
+
+
 % subsection jarvis_march (end)
 
 
@@ -1072,9 +1146,20 @@ For each of these two sets we proceed recursively.
 
 Find the point, $P$ farthest away from the line. the convex hull must contain $P$, so insert the point between $A$ and $B$. A triangle is formed by $ABP$. Remove all points from $S$ that is contained within this triangle. The cross product can be used to calculate wether a point lies inside a triangle.                                                                                        
 
-We form two new sets. One set containing the set of points above the line $AP$. The other set containing the line $BP$. The line $AB$ is then replaced by these two lines. and the algorithm proceeds recursively. The algorithm stops when the sets are empty or if it only consist of one node.
+We form two new sets. One set containing the set of points above the line $AP$. The other set containing points above the line $BP$. The line $AB$ is then replaced by these two lines. and the algorithm proceeds recursively. The algorithm stops when the sets are empty or if it only consist of one node.
+
+An example run of Quickhull can be seen on figure \ref{fig18} 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig18.pdf}
+\caption{Example run of quickhull. (A) find the left and right most points. (B) Recursively process the two subsets and find the point farthest away form the line. (C) Repeat recursively}
+\label{fig18}
+\end{figure}
+
 
 If the partitioning yields balanced sets, the the expected running time is $\O(n\log(n))$. If the partitioning is extremely unbalanced then the running time is $\O(n^2)$. A example of an extremely unbalanced set of points, is when the points lie on a half circle.
+
 
 
 % subsection quickhull (end)
@@ -1085,17 +1170,36 @@ The Kirkpatrick-Seidel algorithm (Marriage before conquest) is output sensitive 
 
 The algorithm first calculates the upper hull and then the lower hull. It then merges these two into the final convex hull. We can safely assume that the merging of the two half hulls can be performed in $\O(1)$.
 
-Let $S$ be the set of points. Divide $S$ into two sets, by dividing $S$ with the line $(p_j,p_k)$, where $p_j \in S$ is the point with minimum $x$-value and $p_k \in S$ is the point with maximum $x$-value. Let $P$ be one of the two sets.
+\begin{itemize}
+  \item Let $S$ be the set of points. Divide $S$ into two sets, by dividing $S$ with the line $(p_j,p_k)$, where $p_j \in S$ is the point with minimum $x$-value and $p_k \in S$ is the point with maximum $x$-value. Let $P$ be one of the two sets.                                                                                                                                        
+  \item The algorithm then calculates the median $x$-coordinate $M$ of the points in $P$. It the finds the bridge segment that crosses the vertical line $x=M$. It finds this bridge segment by a technique called Prune \& Search. $x=M$ divides $P$ in half. The bridge segment across this line, will be part of the final convex hull. 
+  \item Delete the points under the bridge, and split $P$ into the two half's divided by the vertical line. 
+  \item Continue recursively on each half.
+\end{itemize}
 
-The algorithm then calculates the median $x$-coordinate $M$ of the points in $P$. It the finds the bridge segment that crosses the vertical line $x=M$. It finds this bridge segment by a technique called Prune \& Search. $x=M$ divides $P$ in half. The bridge segment across this line, will be part of the final convex hull. Finding the bridge is done by the following procedure.
 
-Randomly pair the points in $P$ into $n/2$ distinct line segments. Name the line segments $q_i$. Let the point of line segment $q_i$ with the lowest $x$-value be called $q_{il}$, and the point with the largest $x$-value $q_{ir}$. This pairing can be done in $\O(n)$.
+The Prune \& Search method works in the following way
 
-Determine the median slope, $m$ of all the distinct line segments. If the number of points is odd, there will be a point that is not part of a line segment. Give this point a slope of $0$. If the number of line segments is even there are two choices for the median slope. Let $m$ be the max of these two slopes.
+\begin{itemize}
+  \item Randomly pair all the points into line segments.
+  \item Determine the median slope, $m$, of all the distinct line segments. If the number of points is odd, there will be a point that is not part of a line segment. Give this point a slope of $0$. If the number of line segments is even there are two choices for the median slope. Let $m$ be the max of these two slopes.
+  \item Construct a sweep line, $L$, having the median slope, i.e $y = mx+b$. Find a point $p_t$ such that $L$ is a supporting line\footnote{A supporting line for a set $S$ is a line that contains a point $p_i \in S$ an no other points above.} for $P$ at $p_t$, this can be done by translating. We call $p_t$ the top point. 
+  \item Let $p_j.x$ define the $x$-coordinate of the point $p_j$. 
+  \begin{itemize}
+    \item If $p_t.x \geq M$, i.e the top point is to the right of the vertical line M, then for each line segment with slope $< m$ remove the right point of the line segment, i.e $q_{ir}$.
+    \item If $p_t.x < M$, i.e. the top point is to the left of the vertical line $M$, then for each line segment with slope $>m$, remove the left point $q_{il}$.
+  \end{itemize}
+  \item Repeat this until only two points are left. We know that at least half of the line segments has a slope greater than $m$, therefore we can conclude that we at each iteration of the bridge finding removes $1/4$ of the points. Note that the points are only removed in the current step where we find the bridge, not the set $P$.
+\end{itemize}
 
-Construct a sweep line, $L$, having the median slope, i.e $y = mx+b$. Find a point $p_t$ such that $L$ is a supporting line\footnote{A supporting line for a set $S$ is a line that contains a point $p_i \in S$ an no other points above.} for $P$ at $p_t$, this can be done by translating. We call $p_t$ the top point. Let $p_j.x$ define the $x$-coordinate of the point $p_j$. If $p_t.x \geq M$, i.e the top point is to the right of the vertical line M, then for each line segment with slope $< m$ remove the right point of the line segment, i.e $q_{ir}$. If $p_t.x < M$, i.e. the top point is to the left of the vertical line $M$, then for each line segment with slope $>m$, remove the left point $q_{il}$. Repeat this until only two points are left. We know that at least half of the line segments has a slope greater than $m$, therefore we can conclude that we at each iteration of the bridge finding removes $1/4$ of the points. Note that the points are only removed in the current step where we find the bridge, not the set $P$.
+Figure \ref{fig19} shows how to fine the bridge
 
-Delete the points under the bridge, and split $P$ into the two half's divided by the vertical line. Continue recursively on each half.
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig19.pdf}
+\caption{(A) Original pointset. (B) Separating the set in two. (C) Finding the median. (D) Pairing points, finding support line and removing points (grey color points are deleted). (E) Removing points. (F) Removing points. (G) Bridge found. (H) Deleting points under bridge}
+\label{fig19}
+\end{figure}
 
 The complexity of the bridge finding is as follows. Pairwise point matching takes $\O(n)$, finding the median slope takes $\O(n)$, slope translation takes $\O(n)$. Each time we remove points we are sure to remove $1/4$ of the points. This yields 
 \begin{align*}
@@ -1150,15 +1254,25 @@ where $c$ is a positive constant. The max is introduced because the algorithm is
 
 \subsection{Chan and relations to MBC} % (fold)
 \label{sub:chan_and_relations_to_mbc}
-\todo{Make chan!} 
+Chan is an algorithm that combines Grahams scan and Jarvis' march (giftwrapping). It is interesting because it involves combining two slower algorithms together to form an algorithm that is faster than either one.
 
- 
-The reading material for the Convex Hulls lecture consisted of the papers by Chan (2d case) and by Kirkpatrick\&Seidel, in addition to Section 33-3 in Cormen (see also the slides). In the exam you should be able to define the Convex Hull problem, you should know the underlying idea of the algorithms, and you should be able to argue for their correctness and running time.
+The problem with Graham's scan is that it sorts all the points, and hence is doomed to having an Omega( n log n) running time, irrespective of the size of the hull. On the other hand, Jarvis's march can perform better if you have few vertices on the hull, but it takes $\O(n)$ time for each vertex in the hull.
 
-A series of different algorithms have been covered: Edge pruning, Graham's scan, Jarvis' march, Quickhull, Randomized Incremental, Divide and conquer, Marriage-before-conquest (Kirkpatrick-Seidel) and Chan's algorithm -- Chan's was covered in the exercises, and the others were covered in the lecture. The concept of convex hull as well as the worst-case and expected complexity of QuickHull were also covered in the exercises, and are relevant for the exam.
+The algorithm works as follows: 
 
-The Marriage-before-conquest and Chan algorithms are the optimal algorithms, and hence also the most important -- you should be able to explain the basic underlying mechanisms and the structure of both algorithms. For Chan's algorithm you should be able to prove complexity and discuss the relation of Chan's algorithm with Jarvis march. For a good grade, you should also be able to argue for the complexity of the Marriage-before-conquest algorithm.
+First suppose we know there are $h$ points on the convex hull, this algorithm starts by shattering the input points in $n/h$ arbitray subsets, each of size $h$, and computing the convex hull of each subset using Graham's scan. This much of the algorithm requires $\O((n/h)h\log(h)) = O(n\log(h))$ time.
 
+Once we have the $n/h$ subhulls, we follow the general outline of Javis's march, wrapping a string around the $n/h$ subhulls. Start with the leftmost input point $l$, starting with $p = l$ we successively find the convex hull vertexes in counter-clockwise order until we return back to the original leftmost point again.
+
+The successor of $p$ must lie on a right tangent line between $p$ and one of the subhulls, a line from $p$ through a vertex of the subhull, such that the subhull lies completely on the right side of the line from $p$'s point of view. We can find the right tangent line between $p$ and any subhull in $O(\log(h))$ time using a variant of binary search. Since there are $n/h$ subhulls, finding the successor of $p$ takes $\O((n/h)\log(h))$ time together. Since there are $h$ convex hull edges, and we find each edge in $\O((n/h)\log(h))$ time, the overall running time of the algorithm is $\O(n\log(h))$.
+
+Unfortunately, this algorithm only takes $O(n\log(h))$ time if we know the value of $h$ in advance. So how do we know $h$'s value? Chan's trick is to guess the correct value of $h$, let's denote the guess by $h'$. Then we shatter the points into $n/h'$ subsets of size $h'$, compute their subhulls, and then find the first $h'$ edges of the global hull. If $h < h'$, this algorithm computes the complete convex hull in $O(n\log(h'))$ time. Otherwise, the hull doesn't wrap all the way back around to $l$, so we know our guess $h'$ is too small.
+
+Chan's algorithm starts with the optimistic guess $h' = 3$. If we finish an iteration of the algorithm and find that $h'$ is too small, we square $h'$ and try again. In the final iteration, $h'<h^2$, so the last iteration takes $\O(n\log(h')) = \O(n\log(h^2)) = \O(n\log(h))$ time.
+
+The total running time of Chan's algorithm is given by the sum: $\O(n\log(3) + n\log(3^2) + n\log(3^4) + ... + n\log(3^{2^k}))$ , for some integer $k$. We can rewrite this as a geometric series: $\O(n\log(3) + 2n\log(3) + 4n\log(3) + ... + 2kn\log(3))$. So Chan's algorithm runs in $\O(n\log(h))$ time overall, even when we don't know the value of $h$.
+
+\todo{Example run of chan} 
 % subsection chan_and_relations_to_mbc (end)
 
 % section computational_geometry_convex_hulls (end)
