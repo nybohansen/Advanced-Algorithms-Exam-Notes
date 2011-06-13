@@ -135,7 +135,7 @@ The final thing we need to show is $3 \Rightarrow 1$. We thus need to show that 
 \end{proof}
 
 The min-cut is the dual of the max flow.
-
+\todo{Where is the mean cut?}
 % subsection min_cut_theorem (end)
                                                           
 \subsection{Ford-Fulkerson and Edmonds Karp} % (fold)
@@ -406,10 +406,10 @@ Example: Let the primal be
 then the dual is
 \begin{align}
  \min &\quad 30y_1 + 24y_2 + 36y_3 \label{dual2}\\ 
- \text{St.} &\quad  y_1 + 2y_2  + 4y_3 \leq 3 \nonumber\\
-            &\quad  y_1 + 2y_2  + 1y_3 \leq 1 \nonumber\\
-            &\quad  3y_1 + 5y_2  + 2y_3 \leq 2 \nonumber\\            
-            &\quad  x_1,x_2,x_3 \geq 0  \nonumber
+ \text{St.} &\quad  y_1 + 2y_2  + 4y_3  \geq 3 \nonumber\\
+            &\quad  y_1 + 2y_2  + 1y_3  \geq 1 \nonumber\\
+            &\quad  3y_1 + 5y_2  + 2y_3 \geq 2 \nonumber\\            
+            &\quad  y_1, y_2, y_3 \geq 0  \nonumber
 \end{align}
 
 Weak linear-programming duality states the following
@@ -915,10 +915,9 @@ Namely, if $r$ is the number of remaining uncovered elements, the next set selec
 
 This argument alone suffices to conclude that when the greedy algorithm selects at most $OPT$ sets, at least half of the remaining uncovered elements are covered. Repeating this argument recursively, yields that all elements are covered after selecting greedily at most $OPT \O(log n)$ sets.
 
-Let $n$ denote the number of elements. In the first iteration we would pick $\geq n/opt$, there would be at least $n-n/opt=n(1-1/opt)$ points left. In the second iteration we would pick at least $n(1-1/opt)/opt$
+Let $r$ denote the number of uncovered elements. Initali  In the first iteration we would pick $\geq n/opt$, there would be at least $n-n/opt=n(1-1/opt)$ points left. In the second iteration we would pick at least $n(1-1/opt)/opt$
 
 
-\url{http://pages.cs.wisc.edu/~shuchi/courses/787-F07/scribe-notes/lecture02.pdf}
 
 \todo{Read and understand}
 
