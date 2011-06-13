@@ -135,7 +135,6 @@ The final thing we need to show is $3 \Rightarrow 1$. We thus need to show that 
 \end{proof}
 
 The min-cut is the dual of the max flow.
-\todo{Where is the mean cut?}
 % subsection min_cut_theorem (end)
                                                           
 \subsection{Ford-Fulkerson and Edmonds Karp} % (fold)
@@ -904,23 +903,26 @@ Greedy-set-cover(X,F)\{
 \}
 \end{alltt}
 
-The greedy-set-cover algorithm is a polynomial time algorithm $\rho(n)$-approximation algorithm where 
+Let $OPT$ denote the number of sets in the optimal solution. Let $r_i$ denote the number of uncovered elements after the $i'th$ iteration. Initially $r_0 = n$ where $n$ is the number of elements. The algorithm picks at least a set covering $r/OPT$ elements at every iteration. 
+
+After the first iteration we would have at least 
 \begin{equation}
-  \rho(n) = H(max())
+r_1 = r_0-r_0/opt=r_0(1-1/opt)  
 \end{equation}
+points left to cover. 
 
-For the approximation ratio for the greedy SET-COVER algorithms, another simpler proof was given during the lecture. It is based only on the number of remaining uncovered elements which are covered by the next set selected by the greedy algorithm. 
+After the second iteration we would have at least $r_1(1-1/opt)$ points to cover. Expanding these expressions yields that after the $k'th$ iteration we would have at least 
+\begin{equation}
+  r_0(1-1/opt)^k  
+\end{equation}
+points to cover.
 
-Namely, if $r$ is the number of remaining uncovered elements, the next set selected by the greedy algorithm covers at least $r/OPT$ elements, where $OPT$ denotes the number of sets in the optimal solution (i.e. the minimum). 
+At each iteration we pick a set, so $k$ yields the number of sets we have picked. The question now is, how many iterations do we have to do before there are no more sets to pick? This question can be answered with the following inequality
 
-This argument alone suffices to conclude that when the greedy algorithm selects at most $OPT$ sets, at least half of the remaining uncovered elements are covered. Repeating this argument recursively, yields that all elements are covered after selecting greedily at most $OPT \O(log n)$ sets.
-
-Let $r$ denote the number of uncovered elements. Initali  In the first iteration we would pick $\geq n/opt$, there would be at least $n-n/opt=n(1-1/opt)$ points left. In the second iteration we would pick at least $n(1-1/opt)/opt$
-
-
-
-\todo{Read and understand}
-
+\begin{align}
+r_0(1-1/opt)^k \leq 1 \\
+\end{align}
+Which by some tricks can be reduced to $k/opt \geq log(r_0)$. Thus all elements are covered after selecting greedily at most $OPT \O(\log(r_0))$ sets.
 % subsection set_covering_problem (end)
 
 \subsection{Linear program to vertex cover} % (fold)
@@ -985,7 +987,9 @@ where \texttt{MergeList(x,y)} as a procedure that merges to list, sorting them i
 
 The list $l_i$ can grow exponential large, up to $2^i$.
 
-The following is a approximation algorithm that returns a value within $1+\epsilon$ factor of the optimal solution. The idea is to trim the list after each iteration, such that if some elements in the list are within a certain threshold of each other, only the smallest element is retained. This trimming can be done in $\O(m)$ where $m$ is the length of the lust given to the trim function.
+The following is a approximation algorithm that returns a value within $1+\epsilon$ factor of the optimal solution. The idea is to trim the list after each iteration, such that if some elements in the list are within a certain threshold of each other, only the smallest element is retained. 
+
+More precisely, given an element $e_i$ in the list, the next element is removed if $(1+\epsilon)e_i\geq e_{i+1}$ then $e_{i+1}$ is removed. This trimming can be done in $\O(m)$ where $m$ is the length of the lust given to the trim function.
 
 \begin{alltt}
 Approx-subset-sum(S,t)\{
@@ -993,19 +997,16 @@ Approx-subset-sum(S,t)\{
   \(l_0\) = \{0\}
   for(i=1 to n)\{
     \(l_i\) = MergeList(\(l_{i-1},l_{i-1}+x_i\))  <- add \(x_i\) to every element in \(l_{i-1}\)
-    \(l_i\) = Trim(\(l_{i},\epsilon/2n\)) <- Trim list
+    \(l_i\) = Trim(\(l_{i},\epsilon/2n\))            <- remove similar elements
     remove from \(l_i\) all elements greater than t.
   \}
   return max(\(l_n\))
 \}  
 \end{alltt}
 
-Similarly, in the exam you will not be required to give an account for the detailed computations in the proof of Theorem 35.8 (SUBSET-SUM), but you should try to understand the idea behind how trimming of the lists is done, and why it works. That is,
+The trimming of the list is done so it won't grow exponentially. On one hand it keeps only a polynomial number of elements in the list, but at the same time the allowed error is so small, that although it may increase at each step, it still does not add to something which is so big that it violates the required approximation bound.
 
-(a) on one hand it keeps only a polynomial number of elements in the list, but
 
-(b) at the same time the allowed error is so small, that although it may increase at each step, it still does not add to something which is so big that it violates the required approximation bound.
-\todo{Understand this}
 % subsection subset_sum_problem (end)
 
 
@@ -1300,7 +1301,7 @@ where $c$ is a positive constant. The max is introduced because the algorithm is
 % subsection marriage_before_conquest_mbc_ (end)
 
 
-\subsection{Chan and relations to MBC} % (fold)
+\subsection{Chan} % (fold)
 \label{sub:chan_and_relations_to_mbc}
 Chan is an algorithm that combines Grahams scan and Jarvis' march (giftwrapping). It is interesting because it involves combining two slower algorithms together to form an algorithm that is faster than either one.
 
@@ -1308,11 +1309,21 @@ The problem with Graham's scan is that it sorts all the points, and hence is doo
 
 The algorithm works as follows: 
 
-First suppose we know there are $h$ points on the convex hull, this algorithm starts by shattering the input points in $n/h$ arbitray subsets, each of size $h$, and computing the convex hull of each subset using Graham's scan. This much of the algorithm requires $\O((n/h)h\log(h)) = O(n\log(h))$ time.
+\begin{itemize}
+  \item First suppose we know there are $h$ points on the convex hull, this algorithm starts by shattering the input points in $n/h$ arbitray subsets, each of size $h$, and computing the convex hull of each subset using Graham's scan. This much of the algorithm requires $\O((n/h)h\log(h)) = O(n\log(h))$ time.
+  \item Once we have the $n/h$ subhulls, we follow the general outline of Javis's march, wrapping a string around the $n/h$ subhulls. Start with the leftmost input point $l$, starting with $p = l$ we successively find the convex hull vertexes in counter-clockwise order until we return back to the original leftmost point again.
+  \item The successor of $p$ must lie on a right tangent line between $p$ and one of the subhulls, a line from $p$ through a vertex of the subhull, such that the subhull lies completely on the right side of the line from $p$'s point of view. We can find the right tangent line between $p$ and any subhull in $O(\log(h))$ time using a variant of binary search. Since there are $n/h$ subhulls, finding the successor of $p$ takes $\O((n/h)\log(h))$ time together. Since there are $h$ convex hull edges, and we find each edge in $\O((n/h)\log(h))$ time, the overall running time of the algorithm is $\O(n\log(h))$.
+\end{itemize}
 
-Once we have the $n/h$ subhulls, we follow the general outline of Javis's march, wrapping a string around the $n/h$ subhulls. Start with the leftmost input point $l$, starting with $p = l$ we successively find the convex hull vertexes in counter-clockwise order until we return back to the original leftmost point again.
+An example run can be seen in figure \ref{fig22}.
 
-The successor of $p$ must lie on a right tangent line between $p$ and one of the subhulls, a line from $p$ through a vertex of the subhull, such that the subhull lies completely on the right side of the line from $p$'s point of view. We can find the right tangent line between $p$ and any subhull in $O(\log(h))$ time using a variant of binary search. Since there are $n/h$ subhulls, finding the successor of $p$ takes $\O((n/h)\log(h))$ time together. Since there are $h$ convex hull edges, and we find each edge in $\O((n/h)\log(h))$ time, the overall running time of the algorithm is $\O(n\log(h))$.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig22.pdf}
+\caption{Example run of the Chan algorithm.}
+\label{fig22}
+\end{figure}
 
 Unfortunately, this algorithm only takes $O(n\log(h))$ time if we know the value of $h$ in advance. So how do we know $h$'s value? Chan's trick is to guess the correct value of $h$, let's denote the guess by $h'$. Then we shatter the points into $n/h'$ subsets of size $h'$, compute their subhulls, and then find the first $h'$ edges of the global hull. If $h < h'$, this algorithm computes the complete convex hull in $O(n\log(h'))$ time. Otherwise, the hull doesn't wrap all the way back around to $l$, so we know our guess $h'$ is too small.
 
@@ -1320,7 +1331,7 @@ Chan's algorithm starts with the optimistic guess $h' = 3$. If we finish an iter
 
 The total running time of Chan's algorithm is given by the sum: $\O(n\log(3) + n\log(3^2) + n\log(3^4) + ... + n\log(3^{2^k}))$ , for some integer $k$. We can rewrite this as a geometric series: $\O(n\log(3) + 2n\log(3) + 4n\log(3) + ... + 2kn\log(3))$. So Chan's algorithm runs in $\O(n\log(h))$ time overall, even when we don't know the value of $h$.
 
-\todo{Example run of chan} 
+
 % subsection chan_and_relations_to_mbc (end)
 
 % section computational_geometry_convex_hulls (end)
