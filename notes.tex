@@ -26,6 +26,41 @@
 \section{Max Flow} % (fold)
 \label{sec:max_flow}
 
+\subsection{Disposition Max Flow} % (fold)
+\label{sub:disposition}
+
+\begin{itemize}
+  \item Draw directed graph
+  \item Definition of flow
+  \begin{itemize}
+    \item Capacity constraint
+    \item Flow conservation
+  \end{itemize}
+  \item Draw residual network
+  \item Define cut - Partition graph into two etc.
+  \begin{itemize}
+    \item Define flow across cut
+    \item Define capacity across cut
+    \item Show Upper bound on flow equals capacity
+  \end{itemize}
+  \item Min-cut theorem
+  \begin{itemize}
+    \item f is a max flow  
+    \item No augmenting paths
+    \item There exist a cut with capacity equal to the flow value
+    \begin{itemize}
+      \item $1 \Leftrightarrow 2$ Contradiction
+      \item $2 \Leftrightarrow 3$ Divide $G$ into two sets, $S$ and $T$, Where sets S contains nodes reachable from $S$ in $G_g$, and $T$ nodes not Reachable from $S$ in $G_f$. Show that the flow of the cut is equal to the capacity.
+      \item $3 \Leftrightarrow 1$ Use that the capacity is a upper bound
+    \end{itemize}
+  \end{itemize}
+  \item Ford-fulkerson and running time
+  \item Edmonds Karp improving
+\end{itemize}
+% subsection disposition (end)Disposition
+
+\newpage
+
 The problem of max flow is finding a flow in a directed graph from a source to a sink. In the case of multiple sources and sinks, one can extend the graph by introducing a \emph{super source} and a \emph{super sink}.
 
 \subsection{Definitions} % (fold)
@@ -178,6 +213,36 @@ This running time can be improved by selecting the augmenting path by breath fir
 \section{Linear Programming} % (fold)
 \label{sec:linear_programming}
 
+\subsection{Disposition Linear Programming} % (fold)
+\label{sub:disposition2}
+\begin{itemize}
+  \item Show small problem, draw graph
+  \item Standard form, and slack form
+  \item SIMPLEX algorithm, that moves along edges, needs initial solution e.g. try $0$
+  \item Some cases $0$ doesn't work, form auxiliary program $-x_0$. Add $-x_0$ to all constraints
+  \item It maximizes the objective function by making it better until all coefficients are $0$.
+  \item It does this by pivoting, basis is left side of slack, non basic is right.
+  \item Explain simplex by Flow diagram
+  \item Show the dual, I.e. $b's$ up into objective function, transpose $a$ and $c$ into right-handside constraints
+  \item Weak duality
+  \item A solution, $\bar{x}$ to the primal, is also a solution to the dual. 
+  \begin{equation} 
+  \bar{y}_i = 
+  \left\{
+  \begin{array}{rl} 
+    -c'_{n+i} & if (n+1) \in N \\
+    0 &  
+  \end{array} 
+  \right. 
+  \end{equation} 
+  Need to show 2 things
+  \begin{itemize}
+    \item Need to show that $\bar{y}_i$ is a feasible solution to the dual
+    \item $\sum_{j=1}^n c_j\bar{x}_j = \sum_{j=1}^m c_j\bar{y}_j$
+  \end{itemize}
+\end{itemize}
+% subsection disposition (end)
+\newpage
 In linear programming we want to maximize (or minimize) a linear function, under a number of constraints. An example of a linear program is
 \begin{align}
  \max &\quad x_1 + x_2 \label{linprop1}\\ 
@@ -443,7 +508,7 @@ The duality theorem states that if a feasible solution of the primal, is equal t
 \begin{theorem}
 Let SIMPLEX terminate with a feasible basic solution $\bar{x}*=(x_1*,x_2*,\ldots,x_n*)$, and let $N$ denote the nonbasic and $B$ the basic variables for the final slack form. Let $c'$ denote the coefficients of the objective function in the final slack form. 
 
-Not let $\bar{y}* = (y_1*,y_2,\ldots,y_m)$ be defined as
+Now let $\bar{y}* = (y_1*,y_2,\ldots,y_m)$ be defined as
 
 \begin{equation} 
 \bar{y}* = 
@@ -476,6 +541,53 @@ In order to prove the above, we have to show that $\bar{y*}$ is a feasible solut
 \section{NP-completeness} % (fold)
 \label{sec:np_completeness}
 
+\subsection{Disposition NP-completeness} % (fold)
+\label{sub:disposition_np_completeness}
+\begin{itemize}
+  \item What are hard problems, Problems that cannot be solved in polynomial time
+  \item What is a language <- Describing instance of a problem so it can be answered with yes/no
+  \begin{equation}
+  HAM-CYCLE = \{\langle G \rangle: G \text{ is a hamilton cycle}\}   
+  \end{equation}
+  \item Reduction algorithm
+  \begin{itemize}
+    \item We can reduce one problem into another problem
+    \item Must be done in polynomial time
+    \item Answers from the original and reduced problem must be the same
+  \end{itemize}
+  \item Definition of P 
+  \begin{equation}
+    P = \{\text{L: L is accepted be a polynomial-time algorithm}\}
+  \end{equation}
+  \item Definition of NP
+  \begin{equation}
+    NP = \{\text{L: There exists an A, such that L is verified in polynomial time}\}
+  \end{equation}
+  \item Definition of NP-Complete
+  \item Draw set, and explain what it would mean if $P = NP$.
+  \begin{enumerate}
+    \item $L \in NP$
+    \item $L' \leq_p L \qquad \forall L' \in NP$
+  \end{enumerate} 
+  \item Show TSP is a NP-complete problem: $HAM-CYCLE \leq_p TSP$. Show two things
+  \begin{itemize}
+    \item Decision problem in NP (Verification in polynomial time)
+    \item $HAM-CYCLE$ instance $G = (V,E)$, form complete graph $G' = (V,E')$ with
+    \begin{equation} 
+    e_i = 
+    \left\{
+    \begin{array}{rl} 
+       0 &  e_i \in E\\
+       1 &  otherwise
+    \end{array} 
+    \right. 
+    \end{equation} 
+  \end{itemize}
+  Suppose $G$ has hamilton cycle $h$. Each edge resides in $G$ thus having cost 0 in $G'$. Suppose $G'$ has a tour $h'$ og cost 0. Then this tour can only occur if $h'$ is a hamilton cycle in $G$. 
+\end{itemize}
+% subsection disposition_np_completeness (end)
+\newpage
+
 NP-complete problems is a class of problems that has algorithms that run in \emph{super polynomial} time, i.e. there running time is thus $>\O(N^k)$, for some constant $k$.
 
 NP-completeness only applies to decision problems. A optimization problem can easily be made into a decision problem by setting a bound. E.g. a shortest path problem\footnote{Finding the shortest path between two nodes in a graph} can be made into a decision problem, by asking: Is there a shortest path between these two nodes with at most length $k$?.  
@@ -487,7 +599,7 @@ When we are proving something is NP-complete, and therefore hard to solve, we ar
 \label{sub:language}
 A language describes a problem. E.g. the language for the Hamilton cycle problem can be described as "Does the graph $G$ have a Hamilton cycle", or more formally
 \begin{equation}
-HAM-CYCLE = \{\langle G \rangle\: G \text{ is a hamilton cycle}\}   
+HAM-CYCLE = \{\langle G \rangle: G \text{ is a hamilton cycle}\}   
 \end{equation}
 The contents between the $\langle$ and $\rangle$ is the input to the problem.
 % subsection language (end)
@@ -535,9 +647,9 @@ A problem is in $co-NP$ if it's compliment is in $NP$. The complement of a decis
 A language $L$ is np-complete if 
 \begin{enumerate}
   \item $L \in NP$
-  \item $L' \leq_p L \qquad \forall L' \in NP$ \label{prop2}
+  \item $L' \leq_p L \qquad \forall L' \in NP$ \label{prop20}
 \end{enumerate}
-In the case where only property \ref{prop2} is satisfied the problem is called \emph{np-hard}.
+In the case where only property \ref{prop20} is satisfied the problem is called \emph{np-hard}.
 
 Figure \ref{fig5} illustrates the 3 classes in a set manner.
 \begin{figure}[ht]
@@ -546,7 +658,6 @@ Figure \ref{fig5} illustrates the 3 classes in a set manner.
 \caption{Set illustration of the 3 classes of problems. Note that both $P$ and $NPC$ is in $NP$, but they are disjoint i.e. this illustration assumes that $P \neq NP$}
 \label{fig5}
 \end{figure}
-
 
 \begin{theorem}
 Let $L_1$ and $L_2$ be languages such that $L_1 \leq_p L_2$. Then if $L_2 \in P$ then $L_1 \in P$  
@@ -562,7 +673,7 @@ If any NP-complete problem is solvable in polynomial time, all NP-complete probl
 \end{theorem}
 
 \begin{proof}
-  Suppose that $L \in P$ and also that $L \in NPC$. For any $L' \in NP$ we have $L' \leq_p L$, by property \ref{prop2} of NP-completeness. Since $L \in P$ there must exist a polynomial algorithm. And by \ref{theorem1} this implies that $L' \in P$.
+  Suppose that $L \in P$ and also that $L \in NPC$. For any $L' \in NP$ we have $L' \leq_p L$, by property \ref{prop20} of NP-completeness. Since $L \in P$ there must exist a polynomial algorithm. And by \ref{theorem1} this implies that $L' \in P$.
 \end{proof}
 
 
@@ -575,7 +686,7 @@ In this example we wish to prove that it is very unlikely that a polynomial algo
 
 Recall that a Hamilton cycle is a path in a undirected graph where each vertex is visited exactly once.
 
-Thus, if we can show that it is at least as has to solve TSP as to solve the Hamiltopnian cycle, we have shown that TSP is in the NP-completeness class. 
+Thus, if we can show that it is at least as hard to solve the TSP problem as it is to solve the Hamilton cycle program, we have shown that TSP is in the NP-completen class. 
 
 Let the language of the TSP be defined as
 
@@ -608,15 +719,55 @@ So if a edge resides in the Hamilton graph $G$, then it has cost $0$ in $G'$ oth
 
 It is clear that we can construct $G'$ in polynomial time. We now show that $G$ contains a Hamilton cycle if and only if graph $G'$ has a tour of cost $0$. Suppose $G$ has a Hamilton cycle $h$. Each edge in $h$ resides in $G$ thus having cost $0$ in $G'$. Conversely, suppose $G'$ has a tour $h'$ of cost $0$, since the cost of the edges in $G'$ is $0$ and $1$, $h'$ can only occur if it traverses the edges of $G'$ with $0$ cost, thus $h'$ contains only edges from $E$.  
 
-
-We have now proven that finding 
+We have now proven that finding TSP tour is at least as hard as finding a Hamilton cycle, which concludes that TSP is NP-complete (Since the Hamilton-Cycle problem is NP-complete)
 % subsection subsection_name (end)
 
 % section np_completeness (end)
 \clearpage \newpage
-\section{Branch and Bound and Metaheuristics} % (fold)
+\section{Branch and Bound and Meta-heuristics} % (fold)
 \label{sec:branch_and_bound_and_metaheuristics}
 
+\subsection{Disposition Branch and Bound and Meta-heuristics} % (fold)
+\label{sub:disposition_branch_and_bound_and_meta_heuristics}
+\begin{itemize}
+  \item Motivation: solve hard discrete problems, large search space
+  \item Draw solution tree, explain the search space, prune, incumbent etc.
+  \item Illustrate branching by independent set, and calculate running time
+  \begin{itemize}
+    \item Recurrence: \begin{equation}
+      T(n) \leq 1 + T(n-d(v)-1) + \sum_{i=1}^{d(v)} T(n-d(v_i)-1)
+    \end{equation}
+    \item Algorithm alway choses vertex with minimum degree so  
+    \begin{equation}
+      T(n-d(v)-1) \geq T(n-d(v_i)-1)      
+    \end{equation}
+    \item Merge the sums
+    \item let $s = d(v)+1$
+    \item Expand 
+    \begin{equation}
+      t(n) \leq 1 + sT(n-s) \leq 1 + s + s^2+s^3+\ldots+s^{n/s} 
+    \end{equation} to $\O(S^{n/s})$ <- harmonic series.
+  \end{itemize}  
+  \item Bounding by TSP and 1-tree
+  \begin{itemize}
+    \item Lower bound on TSP
+    \item Pick node
+    \item Remove all incident edges
+    \item make minimum spanning tree
+    \item Add smallest two edges to minimum spanning tree, cost is lower bound
+  \end{itemize}
+  \item TSP Root node fully connected graph
+  \item Branch on nodes with degree 3 or more
+  \item lower bound is increased every time we branch.
+  \item Meta heuristic algorithms
+  \begin{itemize}
+    \item Hill Climbing <- Steepest descent
+    \item Tabu search <- Memory
+    \item Simulated annealing <- Accepts non improving solutions with a certain probability
+  \end{itemize}
+\end{itemize}
+% subsection disposition_branch_and_bound_and_meta_heuristics (end)
+\newpage
 
 \subsection{Motivation} % (fold)
 \label{sub:motivation}
@@ -655,6 +806,16 @@ Given a graph $G = (V,E)$ the independent set is the set of vertices $I \subset 
 A trivial algorithm to find such a set, is to construct all possible solutions by permutation, and check if it is a independent set. The running time can be calculated from the following observation. Each vertex in the graph can either be included in the set or not included in the set. For each vertex we thus have 2 possibilities. Given $n$ vertices this yields a running time of $\O(2^n)$!
 
 Another approach is to use a branching algorithm. The branching algorithm works as follows. Given a graph $G = (V,E)$ pick a vertex, $v$ with minimum degree\footnote{A degree of a vertex $v$ is the number of adjacent edges to $v$}. Let the set of neighbors to $v$ be defined as $N[v]$. For each vertex $j \in N[V]$ do a branch on the set $G \setminus N[j]$.
+
+Figure \ref{fig20} illustrates an example run of the independent set algorithm.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.50\textwidth]{figures/fig20.pdf}
+\caption{Example run of the independent set algorithm}
+\label{fig20}
+\end{figure}
+
 
 The running time of this procedure can be calculated as the number of nodes in the search tree $T$. The algorithm picks the vertex with the minimum degree and branches on itself and it's neighbors. We thus have
 
@@ -750,6 +911,43 @@ Otherwise the algorithm works as Hill climbing, where the best solution is repla
 \section{Approximation Algorithms} % (fold)
 \label{sec:approximation_algorithms}
 
+\subsection{Disposition Approximation Algorithms} % (fold)
+\label{sub:disposition_approximation_algorithms}
+\begin{itemize}
+  \item Difference between Heuristic algorithms
+  \item Performance ratio $max(\frac{C}{C^*}, \frac{C^*}{C})$
+  \item 2-approximation algorithm for the vertex cover problem
+  \begin{itemize}
+    \item Put lover bound of optimal solution, each edge must have a single node in the vertex cover
+    \item Let $A$ be the set of edges picked in the approximation algorithm
+    \item Then $C* \geq |A| \Leftrightarrow 2C* \geq 2|A|$, i.e. each edge must have one node in the optimal set cover
+    \item The approximation algorithm adds two edges every time it picks one from $A$, thus $C = 2|A|$
+    \item Substituting yields $2C* \geq 2|A| = 2C* \geq C$
+  \end{itemize}
+  \item 2-approximation algorithm for the TSP problem
+  \begin{itemize}
+    \item Let H* be a TSP tour, now remove one edge, yielding a minimum spanning tree $T$. Thus the cost of the spanning tree is a lower bound 
+    \begin{equation}
+    c(T) \leq c(H*) \Leftrightarrow = 2c(T) \leq 2c(H*)
+    \end{equation}
+    \item Imagine instead of a pre-order tree walk, we did a full walk, $H'$, thus the walk would cost $c(H') = 2C(T)$
+    \item By removing vertices from $H'$ we are only making the tour shorter (Triangle inequality)
+    \item Combining yields $2c(T) \leq 2c(H*) \Leftrightarrow c(H') \leq 2c(H*) $
+  \end{itemize}
+  \item Set cover problem $\rho(n) = ln(n)$
+  After the first iteration we would have at least 
+  \begin{equation}
+  r_1 = r_0-r_0/opt=r_0(1-1/opt)  
+  \end{equation}
+  points left to cover.  
+  At each iteration we pick a set, so $k$ yields the number of sets we have picked. How many iterations do we have to do before there are no more sets to pick? 
+  \begin{align}
+  r_0(1-1/opt)^k \leq 1 \\
+  \end{align}
+  Which by some tricks can be reduces to $k/opt \geq log(r_0)$ 
+\end{itemize}
+% subsection disposition_approximation_algorithms (end)
+\newpage
 
 \subsection{Performance ratio} % (fold)
 \label{sub:performance_ratio}
@@ -922,7 +1120,7 @@ At each iteration we pick a set, so $k$ yields the number of sets we have picked
 \begin{align}
 r_0(1-1/opt)^k \leq 1 \\
 \end{align}
-Which by some tricks can be reduced to $k/opt \geq log(r_0)$. Thus all elements are covered after selecting greedily at most $OPT \O(\log(r_0))$ sets.
+Which by some tricks can be reduces to $k/opt \geq log(r_0)$. Thus all elements are covered after selecting greedily at most $OPT \O(\log(r_0))$ sets.
 % subsection set_covering_problem (end)
 
 \subsection{Linear program to vertex cover} % (fold)
@@ -1013,6 +1211,24 @@ The trimming of the list is done so it won't grow exponentially. On one hand it 
 % section approximation_algorithms (end)
 \clearpage \newpage
 \section{Randomized Algorithms} % (fold)
+
+\subsection{Disposition Randomized Algorithms} % (fold)
+\label{sub:disposition_randomized_algorithms}
+\begin{itemize}
+  \item Motivation, eliminate the worst enemy problem etc.
+  \item 2 ways to randomize
+  \begin{itemize}
+    \item Permute by shorting, $\O(n\log(n))$
+    \item Permute in place, $\O(n)$
+  \end{itemize}
+  \item Quicksort - Avoid pivoting on largest element
+  \item Binary search tree - avoid skew tree
+  \item Selection algorithm - Avoid pivoting on largest element
+\end{itemize}
+% subsection disposition_randomized_algorithms (end)
+
+\newpage
+
 \label{sec:randomized_algoritms}
 Randomized algorithms, are algorithms that seeks to eliminate the possibility that `your worst' enemy gives you a input such that the algorithm runs slowly.
 
@@ -1062,16 +1278,37 @@ The changes to quicksort are small. Instead of always choosing the element in th
 % subsection quicksort (end)
 
 
+\subsection{Binary search tree} % (fold)
+\label{sub:binary_search_tree}
+A binary search tree is a tree where each node has either none, one or two children. A child positioned to the left of a node has a value less than the node, and a child positioned to the right of a node has a value greater than the node.
+
+The height of the binary search has direct impact of the time it takes to search, insert and delete nodes. Therefore it is desirable that the height is as small as possible, i.e. the binary tree must be balanced.
+
+A binary search tree can be built from an array of values. The first element of the array becomes the root of the tree. The second element becomes a child of the root, and is positioned to the left if it is lesser than the root node, otherwise it is positioned to the right. This procedure poses a problem. If your worst enemy gave you a an array sorted in increasing\footnote{or decreasing, the height is still $\O(n)$} order the binary search tree would have height $n$, where $n$ is the number of elements in the array. This is not tractable! 
+
+The reason is that whenever a new node is inserted to the search tree it is positioned to the right, because the element being inserted is greater than all other elements inserted. An illustration can be seen on figure \ref{fig11}
+
+We can accommodate this problem, by either choosing the element to insert randomly from the array, or totally randomize the array before inserting.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/fig11.pdf}
+\caption{Illustration of the difference in height, when using the randomized version, compared to the original version.}
+\label{fig11}
+\end{figure}
+
+% subsection binary_search_tree (end)
+
 \subsection{Selection algorithm} % (fold)
 \label{sub:selection_algorithm}
-Randomized select is a randomization algorithm that finds the $i'th$ smallest element in time $\O(n)$. It relies on the randomized partition function also used in quicksort.
+Randomized select is a randomization algorithm that finds the $i'th$ smallest element in time $\O(n)$. It relies on the randomized partition function also used in quicksort. The problem is again if we keep selecting the largest pivot, we will search through all elements.
 
 The algorithm is recursive and selects a part of the total array where it knows the $i'th$ smallest element is in. Following is the algorithm
 \begin{verbatim}
 Randomized Select(A, p, r, i){
   if p==r                                       <- Base case
       return A[p]
-  q = randomized_partition(A,p,r)               <- Partition A, q is index into the 
+  q = randomized_partition(A,p,r)               <- Partition A, q is index of pivot
   k = q-p+1                                     <- k is the 
   if k==i
       return A[q]                               <- BINGO
@@ -1099,33 +1336,28 @@ Figure \ref{fig10} shows an example run of the algorithm. The expected running t
 % subsection selection_algorithm (end)
 
 
-\subsection{Binary search tree} % (fold)
-\label{sub:binary_search_tree}
-A binary search tree is a tree where each node has either none, one or two children. A child positioned to the left of a node has a value less than the node, and a child positioned to the right of a node has a value greater than the node.
-
-The height of the binary search has direct impact of the time it takes to search, insert and delete nodes. Therefore it is desirable that the height is as small as possible, i.e. the binary tree must be balanced.
-
-A binary search tree can be built from an array of values. The first element of the array becomes the root of the tree. The second element becomes a child of the root, and is positioned to the left if it is lesser than the root node, otherwise it is positioned to the right. This procedure poses a problem. If your worst enemy gave you a an array sorted in increasing\footnote{or decreasing, the height is still $\O(n)$} order the binary search tree would have height $n$, where $n$ is the number of elements in the array. This is not tractable! 
-
-The reason is that whenever a new node is inserted to the search tree it is positioned to the right, because the element being inserted is greater than all other elements inserted. An illustration can be seen on figure \ref{fig11}
-
-We can accommodate this problem, by either choosing the element to insert randomly from the array, or totally randomize the array before inserting.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.75\textwidth]{figures/fig11.pdf}
-\caption{Illustration of the difference in height, when using the randomized version, compared to the original version.}
-\label{fig11}
-\end{figure}
-
-% subsection binary_search_tree (end)
-
 % section randomized_algoritms (end)
 
 \clearpage \newpage
 \section{Computational Geometry, Convex hulls} % (fold)
 \label{sec:computational_geometry_convex_hulls}
-Computational Geometry, Convex  hulls, CLRS,  Chapter 33.3 and the papers by [Kirkpatrick\&Seidel] and [Chan] (only 2D case in both articles).
+
+\subsection{Disposition Computational Geometry, Convex hulls} % (fold)
+\label{sub:disposition7}
+\begin{itemize}
+  \item What is a convex hull
+  \item Grahams scan. Sorting $\O(n\log(n))$ + scanning of edges $\O(n)$. Total $\O(n\log(n))$
+  \item Jarvis' march. Scanning takes $n$, and we need to scan $h$ times thus total is $\O(nh) = \O(n^2)$
+  \item Chan - Uses both Grahams scan and jarvis' march. Output sensitive $\O(n\log(h))$.
+  \begin{itemize}
+    \item Graham: $\O((n/h)h\log(h)) = O(n\log(h))$
+    \item Jarvis' march: We can find the right tangent line between $p$ and any subhull in $O(\log(h))$ time using a variant of binary search. Since there are $n/h$ subhulls, finding the successor of $p$ takes $\O((n/h)\log(h))$ time together. Since there are $h$ convex hull edges, and we find each edge in $\O((n/h)\log(h))$ time, the overall running time of the algorithm is $\O(n\log(h))$.                                                                                                                                         
+  \end{itemize}
+  \item MBC <- if time permits
+\end{itemize}
+
+% subsection disposition7 (end)
+\newpage 
 
 Given a set of points $P$, the convex hull problem seeks to find a convex set containing all the points in $P$.
 
@@ -1272,7 +1504,7 @@ where $c$ is a positive constant. The max is introduced because the algorithm is
   \end{equation}
   this trivially holds if $c_1 \leq c$
   
-  Assume $h>2$ and bu subsitution we have
+  Assume $h>2$ and by substitution we have
   \begin{align*}
    f(n,h) &= cn + \max_{h_l+h_r = h}\left\{cn/2\log(h_l)+cn/2\log(h_r)\right\} \\
           &= cn + cn/2\max_{h_l+h_r = h}\left\{\log(h_l)+\log(h_r)\right\} \\
@@ -1305,7 +1537,7 @@ where $c$ is a positive constant. The max is introduced because the algorithm is
 \label{sub:chan_and_relations_to_mbc}
 Chan is an algorithm that combines Grahams scan and Jarvis' march (giftwrapping). It is interesting because it involves combining two slower algorithms together to form an algorithm that is faster than either one.
 
-The problem with Graham's scan is that it sorts all the points, and hence is doomed to having an Omega( n log n) running time, irrespective of the size of the hull. On the other hand, Jarvis's march can perform better if you have few vertices on the hull, but it takes $\O(n)$ time for each vertex in the hull.
+The problem with Graham's scan is that it sorts all the points, and hence is doomed to having an $\O(n\log(n))$ running time, irrespective of the size of the hull. On the other hand, Jarvis's march can perform better if you have few vertices on the hull, but it takes $\O(n)$ time for each vertex in the hull.
 
 The algorithm works as follows: 
 
@@ -1340,6 +1572,17 @@ The total running time of Chan's algorithm is given by the sum: $\O(n\log(3) + n
 \section{Computational Geometry, Delaunay triangulatiom} % (fold)
 \label{sec:computational_geometry_delaunay_triangulatiom}
 
+\subsection{Disposition Computational Geometry, Delaunay triangulatiom} % (fold)
+\label{sub:disposition8}
+\begin{itemize}
+  \item Applications
+  \item Good triangulation - edge flip
+  \item Naive method - add edges without crossing already made edges
+  \item Example of Delaunay, big triangle, maintenance of point location data structure
+  \item Voronoi diagram from circumcircle 
+\end{itemize}
+\newpage
+% subsection disposition (end)
 
 \subsection{Applications} % (fold)
 \label{sub:applications}
@@ -1427,7 +1670,7 @@ The Voronoi diagram is shown as red on figure \ref{fig8}, while the triangulatio
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.7\textwidth]{figures/fig8.png}
+\includegraphics[width=0.7\textwidth]{figures/fig8.pdf}
 \caption{Duality between the Delaunay triangulation and the Voronoi diagram.}
 \label{fig8}
 \end{figure}
@@ -1474,8 +1717,21 @@ Figure \ref{fig9} shows how the data structure is maintained when splitting exis
 
 The \emph{expected} running time of the algorithm is $\O(n\log(n))$. This can be explained as, it takes constant time to create new triangles the maximal number of triangles created is $\O(n)$. When identifying the triangle in which a point is located, we use the point location data structure, and can make this identification in $\O(\log(n))$.
 
-
 % subsection computing_the_delaunay_triangulation (end)
+
+\subsection{Voronoi diagram} % (fold)
+\label{sub:voronoi_diagram}
+The Voronoi diagram can be made by the Delaunay triangulation by calculating the circumcircles of every triangle in the Delaunay. The centers of the circumcircles are vertices in the Voronoi diagram. The centers can be connected by edges so the each edge is the shortest possible. 
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/fig23.pdf}
+\caption{Example of calculating the Voronoi diagram from the Delaunay triangulation}
+\label{fig23}
+\end{figure}
+
+
+% subsection voronoi_diagram (end)
 
                                        
 % section computational_geometry_delaunay_triangulatiom (end)
