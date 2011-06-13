@@ -618,10 +618,6 @@ We have now proven that finding
 \section{Branch and Bound and Metaheuristics} % (fold)
 \label{sec:branch_and_bound_and_metaheuristics}
 
-tegn et træ, cut løsninger væk, find god lower bound
-
-Hill climbing, simulated annealing. Tabu search er central
-
 
 \subsection{Motivation} % (fold)
 \label{sub:motivation}
@@ -629,15 +625,25 @@ NP-hard problems can be solved to closed form by using an exact algorithm like b
 
 The search space for NP-hard problems are extremely large, and solving problems exact means, to some extent, that we need to traverse the whole search space. Solving heuristically means to traverse part of the search space, thereby gaining a speedup. 
 
-By using branch and bound we are trying not to visit the whole solution space, but instead only visit the solution space where we know an optimal solution could reside.
+By using branch and bound we are trying not to visit the whole solution space, but instead only visit the solution space where we know an optimal solution could reside. Suppose we have a problem, with tree binary variables $x_1, x_2, x_3$. Figure \ref{fig21} shows a total enumeration tree for this problem. There are in total $2^3 = 8$ solutions, and in general we can describe the number of solutions to such a problem as $2^n$.
 
-Strong points : 
-NP problems
-Greedy/Dynamic algorithms
-overview on what we try to accomplish
-\todo{write some motivation on branch and bound}
+This is an example of a problem where we do not want to explore the whole search tree before we find a solution. Imagine we could prune some branches of the tree, thereby making the search tree smaller. This is exactly what Branch \& Bound does.
+
+The nodes of a Branch \& Bound tree corresponds to partial solutions, i.e solutions where some part of the variables are defined and some part is not. The leafs corresponds to solutions where all the variables are defined.
+
+A bounding function takes partial solution, and from this calculates a bound on the complete solution containing this partial solution.
+
+The incumbent is the best known feasible solution found so far. One wishes to find an incumbent as faast as possiblle, as this means that, hopefully, some parts of the tree will have a bound worse than the incumbent, thereby giving us the possibility to discard these parts.
+
+By the help of the bounding function, we can calculate the a bound of a node containing a partial solution. If this bound is worse than the incumbent, then we can discard this part of the tree, thereby remove parts of the search space.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.5\textwidth]{figures/fig21.pdf}
+\caption{Total enumeration of solutions, for a problem with tree binary variables $x_1, x_2, x_3$. The leafs of the tree corresponds to solutions, whereas the node is partial solutions}
+\label{fig21}
+\end{figure}
 % subsection motivation (end)
-
 
 \subsection{Branching} % (fold)
 \label{sub:branching}
@@ -679,24 +685,67 @@ this follows from the observation, that we subtract $s$ from $n$ at each recursi
 
 \subsection{Bounding} % (fold)
 \label{sub:bounding}
-The bounding part of the Branch and Bound algorithm gives a lower (or upper depending on the objective) bound of the solution based on subproblems.
+The bounding part of the Branch and Bound algorithm gives a bound of the partial solution found so far. In order to illustrate the bounding part, I have chosen to use the TSP problem. 
 
-demonstrating how it works on a simple graph, including exp. on live nodes. Presenting one of the methods, 1-tree or LP 
-(here is another source for 1-tree \url{http://www-e.uni-magdeburg.de/mertens/TSP/node4.html\#sec:onetree} )
-Arguing and maybe proving why is that lower-bound .
+Given a TSP problem let the root node be the fully connected graph. We can calculate a lower bound of the TSP tour by the following procedure. Choose a special node $\#1$ and remove all it's incident edges. Calculate the minimum spanning tree, $t_{rest}$ of the rest of the graph. Add the two shortest edges $e_1,e_2$ incident to $\#1$ $t_{rest}$ producing $t_{one}$. $t_{one}$  is now a 1-tree. 
+
+\begin{definition}
+The total cost of $t_{one}$ is less than the total cost of the optimal tour.  
+\end{definition}
+
+\begin{proof}
+  Note that a Hamilton cycle in $G$ consist of two edges $e'_1$, $e'_2$ and a tree $t'_{rest}$ in the rest of $G$. So the set of Hamilton cycles is a subset of the set of 1-trees. Since $e_1$ and $e_2$ are the shortest edges incident to $\#1$, and $t_{rest}$ is the minimum spanning tree in the rest of $G$, the cost of $t_{one}$ is less than or equal to the cost of any Hamilton cycle, especially a TSP tour.
+\end{proof}
+
+The root node of the Branch and Bound search tree of the TSP is the fully connected graph. Every time we branch on a node $j$, we remove edges from $G$ so they are not present in the descendants of $j$. We branch on all the nodes which has degree $\geq 3$.
+
+How to get an initial Incumbent brings us to meta-heuristics
+
 % subsection bounding (end)
 
 
-\subsection{Heuristics} % (fold)
+\subsection{Meta-Heuristics} % (fold)
 \label{sub:heuristics}
-Discussing on the types of representations (permutation etc. ) 
-Showing the local maximum issue on hill-climbing 
-presenting one advanced methods and mentioning the others.
+
+Meta-heuristic algorithms is algorithms that try to find a optimal solution, by improving a previous solution. Most heuristic methods starts with an initial solution, and permutes it slightly thereby giving a new, possible better, solution. 
+
+The difference between heuristic algorithms and approximation algorithms is that the approximation algorithms gives a guarantee of the result, whereas the heuristic algorithms does not give this guarantee.  
+
+All the algorithms presented below, needs an initial solution. It really depends on the problem how this initial solution is found. For the TSP problem the nearest neighbor algorithm could be used or alternatively calculating the convex hull and adding points to the edges of the hull.
+
+Furthermore, the description of the neighborhood is very problem specific.
+
+\subsubsection{Hill climbing} % (fold)
+\label{ssub:hill_climbing}
+Hill climbing is a simple heuristic algorithm that only makes strictly improving moves. Given a initial solution $s$, a sample is chosen from the neighborhood, $t \in N(s)$. If the sample yields a better solution, then the initial solution is exchanged with the sample i.e $s=t$. This procedure is repeated until local optima is reached, i.e. 
+
+\begin{equation}
+  f(t) \leq f(s) \qquad \forall t \in N(S)
+\end{equation}
+
+The problem with Hill climbing is that local optima doesn't guarantee to bee close to the global optima, actually it could be far away from the global optimum.
+
+% subsubsection hill_climbing (end)
+
+\subsubsection{Simulated annealing} % (fold)
+\label{ssub:simulated_annuealing}
+Simulated annealing is a heuristic algorithm that always performs improving moves, but also accept non improving moves. The algorithm has a tweaking parameter $T$ that is gradually decreased as the algorithm runs. Given a initial solution, $s$ and a initial tweaking parameter $T$ the algorithm chooses a sample, $t$ from the neighborhood. If the sample yields a better solution, the initial best solution is discarded and replaced by the sample. If the sample does not yield a better solution, the sample is accepted with probability
+\begin{equation}
+  e^{\frac{s-t}{T}}
+\end{equation}
+% subsubsection simulated_annuealing (end)
+
+
+\subsubsection{Tabu search} % (fold)
+\label{ssub:tabu_search}
+Tabu search is a heuristic algorithm that has memory. It memorizes the places it has already visited, and forbids the algorithm to visit these places again. This has the effect that no cycling can occur, and no solution is explored twice. 
+
+Otherwise the algorithm works as Hill climbing, where the best solution is replaced if the candidate solution is better.
+% subsubsection tabu_search (end)
 % subsection heuristics (end)
 
 
-
-Branch and Bound and Metaheuristics are  distributed notes ([Clausen] sections 1 and 2], [Luke] sections 0,1 and 2, [Fomin and Kratsch] chapter 1 and chapter 2).                                                                                                                                                          
+% Branch and Bound and Metaheuristics are  distributed notes ([Clausen] sections 1 and 2], [Luke] sections 0,1 and 2, [Fomin and Kratsch] chapter 1 and chapter 2).                                                                                                                                                          
 % section branch_and_bound_and_metaheuristics (end)
 \clearpage \newpage
 \section{Approximation Algorithms} % (fold)
