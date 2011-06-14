@@ -140,12 +140,12 @@ Show that the flow value has an upper bound. Let $V$, in a graph $G = (V,E)$, be
 
 The proof is done in a circular fashion. We will start by showing $1 \Rightarrow 2$ by contradiction.   
   
-Let $f$ be a maximum flow in $G$. Let there be an augmenting path in the residual network. Hence there is a nonzero flow $f'$ in $G_f$. Thus $f \uparrow f'$ is stictly greater than $f$. This is a contradiction compared to our initial belief that $f$ was a maximum.
+Let $f$ be a maximum flow in $G$. Let there be an augmenting path in the residual network. Hence there is a nonzero flow $f'$ in $G_f$. Thus $f \uparrow f'$ is strictly greater than $f$. This is a contradiction compared to our initial belief that $f$ was a maximum.
 \end{proof} 
 
 We will now show $2 \Rightarrow 3$
 \begin{proof}
-Assume that there are no augmenting paths in $G_f$, i.e. there are no paths between $s$ and $t$ in $G_f$, and they are there disconected. Now partition $G$ into two subsets, $S$ and $T$, such that $S = \{v \in V: \text{There is a path from $s$ to $v$ in $G_f$}\}$ and $T = V\setminus S$. I.e. $S$ contains the vertices reachable from the source node $s$ in $G_f$. Then $(S,T)$ is a cut. We now want to show that the value of this cut is equal to $|f|$. 
+Assume that there are no augmenting paths in $G_f$, i.e. there are no paths between $s$ and $t$ in $G_f$, and they are there disconnected. Now partition $G$ into two subsets, $S$ and $T$, such that $S = \{v \in V: \text{There is a path from $s$ to $v$ in $G_f$}\}$ and $T = V\setminus S$. I.e. $S$ contains the vertices reachable from the source node $s$ in $G_f$. Then $(S,T)$ is a cut. We now want to show that the value of this cut is equal to $|f|$. 
 
 Let $u \in S$ and $v \in T$. 
 
@@ -174,7 +174,7 @@ The min-cut is the dual of the max flow.
                                                           
 \subsection{Ford-Fulkerson and Edmonds Karp} % (fold)
 \label{sub:ford_fulkerson_and_edmonds_karp}
-The Ford-Fulkersen method works as follows:
+The Ford-Fulkerson method works as follows:
 \begin{verbatim}
   Initialize all edges to have a 0 flow
   Construct the residual network G_f   
@@ -223,8 +223,11 @@ This running time can be improved by selecting the augmenting path by breath fir
   \item It maximizes the objective function by making it better until all coefficients are $0$.
   \item It does this by pivoting, basis is left side of slack, non basic is right.
   \item Explain simplex by Flow diagram
-  \item Show the dual, I.e. $b's$ up into objective function, transpose $a$ and $c$ into right-handside constraints
+  \item Show the dual, I.e. $b's$ up into objective function, transpose $a$ and $c$ into right-hand side constraints
   \item Weak duality
+  \begin{equation}
+    \sum_{j=1}^n c_jx_j \leq \sum{j_1}^m b_iy_i
+  \end{equation}
   \item A solution, $\bar{x}$ to the primal, is also a solution to the dual. 
   \begin{equation} 
   \bar{y}_i = 
@@ -457,7 +460,7 @@ and call this the \emph{primal}. We define the \emph{dual} as
  \text{S.t.} &\quad \sum_{j=1}^m a_{ij}y_i \geq c_j \qquad j=1,2,\ldots,n \label{dual0}\\
              &\quad y_j \geq 0 \qquad i=1,2,\ldots,m \nonumber
 \end{align}
-The dual is a minimization problem and it has $m$ variables and $n$ constraints. Furthermore the less-than-equal-to has been replaced by greater-than-equal-to. Each $b_i$ in the primal is now part of the objective function as a coefficient. Each $c_j$ in the primal is now the right handside of the constraints. If $a$ was a matrix then in the dual it is transposed. 
+The dual is a minimization problem and it has $m$ variables and $n$ constraints. Furthermore the less-than-equal-to has been replaced by greater-than-equal-to. Each $b_i$ in the primal is now part of the objective function as a coefficient. Each $c_j$ in the primal is now the right hand side of the constraints. If $a$ was a matrix then in the dual it is transposed. 
 
 Example: Let the primal be
 \begin{align}
@@ -583,7 +586,7 @@ In order to prove the above, we have to show that $\bar{y*}$ is a feasible solut
     \right. 
     \end{equation} 
   \end{itemize}
-  Suppose $G$ has hamilton cycle $h$. Each edge resides in $G$ thus having cost 0 in $G'$. Suppose $G'$ has a tour $h'$ og cost 0. Then this tour can only occur if $h'$ is a hamilton cycle in $G$. 
+  Suppose $G$ has hamilton cycle $h$. Each edge resides in $G$ thus having cost 0 in $G'$. Suppose $G'$ has a tour $h'$ of cost 0. Then this tour can only occur if $h'$ is a hamilton cycle in $G$. 
 \end{itemize}
 % subsection disposition_np_completeness (end)
 \newpage
@@ -644,12 +647,12 @@ i.e. the NP class consist of all the problem instances $L$ for which we can veri
 
 A problem is in $co-NP$ if it's compliment is in $NP$. The complement of a decision problem, is the negation of the decision problem (interchange the yes/no). 
 
-A language $L$ is np-complete if 
+A language $L$ is NP-complete if 
 \begin{enumerate}
   \item $L \in NP$
   \item $L' \leq_p L \qquad \forall L' \in NP$ \label{prop20}
 \end{enumerate}
-In the case where only property \ref{prop20} is satisfied the problem is called \emph{np-hard}.
+In the case where only property \ref{prop20} is satisfied the problem is called \emph{NP-hard}.
 
 Figure \ref{fig5} illustrates the 3 classes in a set manner.
 \begin{figure}[ht]
@@ -686,7 +689,7 @@ In this example we wish to prove that it is very unlikely that a polynomial algo
 
 Recall that a Hamilton cycle is a path in a undirected graph where each vertex is visited exactly once.
 
-Thus, if we can show that it is at least as hard to solve the TSP problem as it is to solve the Hamilton cycle program, we have shown that TSP is in the NP-completen class. 
+Thus, if we can show that it is at least as hard to solve the TSP problem as it is to solve the Hamilton cycle program, we have shown that TSP is in the NP-complete class. 
 
 Let the language of the TSP be defined as
 
@@ -783,7 +786,7 @@ The nodes of a Branch \& Bound tree corresponds to partial solutions, i.e soluti
 
 A bounding function takes partial solution, and from this calculates a bound on the complete solution containing this partial solution.
 
-The incumbent is the best known feasible solution found so far. One wishes to find an incumbent as faast as possiblle, as this means that, hopefully, some parts of the tree will have a bound worse than the incumbent, thereby giving us the possibility to discard these parts.
+The incumbent is the best known feasible solution found so far. One wishes to find an incumbent as fast as possible, as this means that, hopefully, some parts of the tree will have a bound worse than the incumbent, thereby giving us the possibility to discard these parts.
 
 By the help of the bounding function, we can calculate the a bound of a node containing a partial solution. If this bound is worse than the incumbent, then we can discard this part of the tree, thereby remove parts of the search space.
 
@@ -942,9 +945,9 @@ Otherwise the algorithm works as Hill climbing, where the best solution is repla
   points left to cover.  
   At each iteration we pick a set, so $k$ yields the number of sets we have picked. How many iterations do we have to do before there are no more sets to pick? 
   \begin{align}
-  r_0(1-1/opt)^k \leq 1 \\
+  r_0(1-1/opt)^k < 1 \\
   \end{align}
-  Which by some tricks can be reduces to $k/opt \geq log(r_0)$ 
+  Which by some tricks can be reduces to $k < opt\log(r_0)$. Thus all elements are covered after selecting greedily at most $OPT \O(\log(r_0))$ sets.
 \end{itemize}
 % subsection disposition_approximation_algorithms (end)
 \newpage
@@ -1020,16 +1023,16 @@ thereby giving us a upper-bound on the number of elements in the vertex cover fo
 \label{sub:the_tsp_problem}
 In the following we assume that the triangle inequality\footnote{Intuitively explanation: The shortest distance between 2 points is always a straight line} holds. If the triangle inequality do not hold, then it is possible to show that no polynomial approximation algorithm exists!
 
-The TSP problem can be solved by a 2-approximation polynomial algorithm. The algorithm works as follows. It takes a bunch of points, and makes a complete graph. It then runs Prim's algoritm to find the minimum spanning tree\footnote{Tree containing all the vertices where the length of the edges is minimized. Running time depends on implementation but can be $\O(E\log(V))$ when using a binary heap}
+The TSP problem can be solved by a 2-approximation polynomial algorithm. The algorithm works as follows. It takes a bunch of points, and makes a complete graph. It then runs Prim's algorithm to find the minimum spanning tree\footnote{Tree containing all the vertices where the length of the edges is minimized. Running time depends on implementation but can be $\O(E\log(V))$ when using a binary heap}
 
-After finding the minimum spanning tree we have a list of vertices contained in a binary heap. We then create a list, $H$ from the preorder tree walk of this binary heap. The preorder tree walk can be thought of as we are walking along side the minimum spanning tree, always having the vertices to the left of the current direction. Each time we meet a vertex we haven't seen before, we store it in $H$. Eventually we will return to the starting node. 
+After finding the minimum spanning tree we have a list of vertices contained in a binary heap. We then create a list, $H$ from the pre-order tree walk of this binary heap. The pre-order tree walk can be thought of as we are walking along side the minimum spanning tree, always having the vertices to the left of the current direction. Each time we meet a vertex we haven't seen before, we store it in $H$. Eventually we will return to the starting node. 
 
 $H$ is the approximated solution to the TSP problem. An example run can be seen on figure
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.75\textwidth]{figures/fig14.pdf}
-\caption{Example run of the TSP approximation algorithm. (A) initial point cloud. (B) Fully connected graph. (C) Minimum spanning tree. (D) Preorder tree walk. (E) Approximated TSP tour}
+\caption{Example run of the TSP approximation algorithm. (A) initial point cloud. (B) Fully connected graph. (C) Minimum spanning tree. (D) pre-order tree walk. (E) Approximated TSP tour}
 \label{fig14}
 \end{figure}
 
@@ -1043,7 +1046,7 @@ The proof is similar to the proof given for the vertex cover problem. We start b
   c(T) \leq c(H^*) \Leftrightarrow 2c(T) \leq c(H^*) \label{tspeq1}
 \end{equation}
 
-Imagine instead of a preorder tree walk we did a full walk, adding a node to $H$ every time we encountered it disregarding if we have seen the node before. We would then end up with a list of vertices $H'$ where the vertices where allowed to be present multiple times. The full walk traverses every edge in $T$ exactly twice, we have
+Imagine instead of a pre-order tree walk we did a full walk, adding a node to $H$ every time we encountered it disregarding if we have seen the node before. We would then end up with a list of vertices $H'$ where the vertices where allowed to be present multiple times. The full walk traverses every edge in $T$ exactly twice, we have
 
 \begin{equation}
   c(H') = 2 c(T) \label{tspeq2}
@@ -1118,9 +1121,9 @@ points to cover.
 At each iteration we pick a set, so $k$ yields the number of sets we have picked. The question now is, how many iterations do we have to do before there are no more sets to pick? This question can be answered with the following inequality
 
 \begin{align}
-r_0(1-1/opt)^k \leq 1 \\
+r_0(1-1/opt)^k < 1 \\
 \end{align}
-Which by some tricks can be reduces to $k/opt \geq log(r_0)$. Thus all elements are covered after selecting greedily at most $OPT \O(\log(r_0))$ sets.
+Which by some tricks can be reduces to $k/opt > log(r_0)$. Thus all elements are covered after selecting greedily at most $OPT \O(\log(r_0))$ sets.
 % subsection set_covering_problem (end)
 
 \subsection{Linear program to vertex cover} % (fold)
@@ -1244,9 +1247,9 @@ A randomized approach to this problem would be to receive the full list of candi
 
 Because the candidates arrive in randomized order, and each candidate is equally likely to be the best, we have that the probability that the $i'th$ candidate is hired can be expressed as $1/i$.
 
-From the harmonic series we have the cost as $1/1+1/2+1/3+\ldots+1/n \approx ln(n)$ which is also the \emph{expected} cost of the algorithm. 
+From the harmonic series we have the cost as $1/1+1/2+1/3+\ldots+1/n \approx \ln(n)$ which is also the \emph{expected} cost of the algorithm. 
 
-In order to arrive at this result we used the \emph{linearity of expectations}. Linearity of expectations means that the expected value of a sum equals the expected value of each i'th terms of the sum. Dice example.Throwing a dice yields a number in the interval $1-6$. The expected number is $3,5$. Throw the dice 10 times then the expected sum will be 35. This holds only for summation not products. For products it only holds for unrelated events (iid).
+In order to arrive at this result we used the \emph{linearity of expectations}. Linearity of expectations means that the expected value of a sum equals the expected value of each $i'th$ terms of the sum. Dice example.Throwing a dice yields a number in the interval $1-6$. The expected number is $3,5$. Throw the dice 10 times then the expected sum will be 35. This holds only for summation not products. For products it only holds for unrelated events (iid).
 
 
 % subsection hiring_problem (end)
@@ -1348,7 +1351,7 @@ Figure \ref{fig10} shows an example run of the algorithm. The expected running t
   \item What is a convex hull
   \item Grahams scan. Sorting $\O(n\log(n))$ + scanning of edges $\O(n)$. Total $\O(n\log(n))$
   \item Jarvis' march. Scanning takes $n$, and we need to scan $h$ times thus total is $\O(nh) = \O(n^2)$
-  \item Chan - Uses both Grahams scan and jarvis' march. Output sensitive $\O(n\log(h))$.
+  \item Chan - Uses both Grahams scan and Jarvis' march. Output sensitive $\O(n\log(h))$.
   \begin{itemize}
     \item Graham: $\O((n/h)h\log(h)) = O(n\log(h))$
     \item Jarvis' march: We can find the right tangent line between $p$ and any subhull in $O(\log(h))$ time using a variant of binary search. Since there are $n/h$ subhulls, finding the successor of $p$ takes $\O((n/h)\log(h))$ time together. Since there are $h$ convex hull edges, and we find each edge in $\O((n/h)\log(h))$ time, the overall running time of the algorithm is $\O(n\log(h))$.                                                                                                                                         
@@ -1367,13 +1370,13 @@ Let $S$ be a convex set. Then for any two points $a,b \in S$ the following is tr
 \end{equation}
 thus, there exists a line between any two points in $S$, such that the line between them is contained within $S$.
 
-In the following we assume that no points has the same $x$- or $y$- coordinates and no three points are collinear. This is true in the continous world, but watch out when going into the discrete world of computers!
+In the following we assume that no points has the same $x$- or $y$- coordinates and no three points are collinear. This is true in the continuous world, but watch out when going into the discrete world of computers!
 
-We denote the convex hull of a set $S$ to be $CH(S)$. There exists several algorithms to calculate the convex hull. Int he following, Grahams scan, Jarvis' march, quickhull, randomized incremental and marriage before conquest is explained in detail.
+We denote the convex hull of a set $S$ to be $CH(S)$. There exists several algorithms to calculate the convex hull. Int he following, Grahams scan, Jarvis' march, Quickhull, randomized incremental and marriage before conquest is explained in detail.
 
 \subsection{Grahams scan} % (fold)
 \label{sub:grahams_scan}
-Grahams scan has a running time of $\O(n\log(n))$. It starts by choosing a the point $p_0 \in S$, with the lowest $y$-coordinate. This can be done in $\O(n)$. It then sorts the remaining points $p_i \in S$ by the angle between the line $(p_0, p_i)$ and the $x$-axis. This sorting can be done in $n \log(n)$ by e.g. heap sort\footnote{Heap sort uses a heap, i.e. a tree datastructure where the largest element is on top.} 
+Grahams scan has a running time of $\O(n\log(n))$. It starts by choosing a the point $p_0 \in S$, with the lowest $y$-coordinate. This can be done in $\O(n)$. It then sorts the remaining points $p_i \in S$ by the angle between the line $(p_0, p_i)$ and the $x$-axis. This sorting can be done in $n \log(n)$ by e.g. heap sort\footnote{Heap sort uses a heap, i.e. a tree data structure where the largest element is on top.} 
 
 Put $p_0, p_1, p_2$ in the list of nodes that constitutes the convex hull. If making a left turn when adding $p_3$, remove $p_2$ and add $p_3$ to the list. Otherwise if making a right turn, add $p_3$ to the list. Continue adding nodes. In general, if adding node $p_j$ creates a left turn, then remove node $p_{j-1}$ and add $p_j$. Otherwise just add $p_j$. When last node has been reached, the convex hull is done.
 
@@ -1400,7 +1403,7 @@ The time complexity is $\O(n\log(n))$ since sorting takes $\O(n\log(n))$ and the
 
 \subsection{Jarvis' march} % (fold)
 \label{sub:jarvis_march}
-Jarvis' march is also knows as the `Giftwrapping algorithm'. It has a complexity of $\O(nh)$, where $n$ is the number of nodes, and $h$ is the number of nodes in the convex hull. Since part of the complexity relies on the final output, the algorithm is \emph{output sensitive} and can be $\O(n^2)$ when $h=n$.
+Jarvis' march is also knows as the `Gift wrapping algorithm'. It has a complexity of $\O(nh)$, where $n$ is the number of nodes, and $h$ is the number of nodes in the convex hull. Since part of the complexity relies on the final output, the algorithm is \emph{output sensitive} and can be $\O(n^2)$ when $h=n$.
 
 Find the point, $p_0$, which is placed leftmost. This point can be found in $\O(n)$. Add $p_o$ to the convex hull list. Now find the point $p_1$ which has every other point $p_i$ to the right and add it to the list of convex hull nodes. This can also be done in $\O(n)$ by comparing polar angles from $p_0$. Continue to add $p_i$ to the list such that every other node is to the right of $p_i$. Continue until the $p_i=p_0$.
 
@@ -1478,7 +1481,7 @@ Figure \ref{fig19} shows how to fine the bridge
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.9\textwidth]{figures/fig19.pdf}
-\caption{(A) Original pointset. (B) Separating the set in two. (C) Finding the median. (D) Pairing points, finding support line and removing points (grey color points are deleted). (E) Removing points. (F) Removing points. (G) Bridge found. (H) Deleting points under bridge}
+\caption{(A) Original point set. (B) Separating the set in two. (C) Finding the median. (D) Pairing points, finding support line and removing points (grey color points are deleted). (E) Removing points. (F) Removing points. (G) Bridge found. (H) Deleting points under bridge}
 \label{fig19}
 \end{figure}
 
@@ -1535,14 +1538,14 @@ where $c$ is a positive constant. The max is introduced because the algorithm is
 
 \subsection{Chan} % (fold)
 \label{sub:chan_and_relations_to_mbc}
-Chan is an algorithm that combines Grahams scan and Jarvis' march (giftwrapping). It is interesting because it involves combining two slower algorithms together to form an algorithm that is faster than either one.
+Chan is an algorithm that combines Grahams scan and Jarvis' march (gift wrapping). It is interesting because it involves combining two slower algorithms together to form an algorithm that is faster than either one.
 
 The problem with Graham's scan is that it sorts all the points, and hence is doomed to having an $\O(n\log(n))$ running time, irrespective of the size of the hull. On the other hand, Jarvis's march can perform better if you have few vertices on the hull, but it takes $\O(n)$ time for each vertex in the hull.
 
 The algorithm works as follows: 
 
 \begin{itemize}
-  \item First suppose we know there are $h$ points on the convex hull, this algorithm starts by shattering the input points in $n/h$ arbitray subsets, each of size $h$, and computing the convex hull of each subset using Graham's scan. This much of the algorithm requires $\O((n/h)h\log(h)) = O(n\log(h))$ time.
+  \item First suppose we know there are $h$ points on the convex hull, this algorithm starts by shattering the input points in $n/h$ arbitrary subsets, each of size $h$, and computing the convex hull of each subset using Graham's scan. This much of the algorithm requires $\O((n/h)h\log(h)) = O(n\log(h))$ time.
   \item Once we have the $n/h$ subhulls, we follow the general outline of Javis's march, wrapping a string around the $n/h$ subhulls. Start with the leftmost input point $l$, starting with $p = l$ we successively find the convex hull vertexes in counter-clockwise order until we return back to the original leftmost point again.
   \item The successor of $p$ must lie on a right tangent line between $p$ and one of the subhulls, a line from $p$ through a vertex of the subhull, such that the subhull lies completely on the right side of the line from $p$'s point of view. We can find the right tangent line between $p$ and any subhull in $O(\log(h))$ time using a variant of binary search. Since there are $n/h$ subhulls, finding the successor of $p$ takes $\O((n/h)\log(h))$ time together. Since there are $h$ convex hull edges, and we find each edge in $\O((n/h)\log(h))$ time, the overall running time of the algorithm is $\O(n\log(h))$.
 \end{itemize}
@@ -1569,10 +1572,10 @@ The total running time of Chan's algorithm is given by the sum: $\O(n\log(3) + n
 % section computational_geometry_convex_hulls (end)
 
 \clearpage \newpage
-\section{Computational Geometry, Delaunay triangulatiom} % (fold)
+\section{Computational Geometry, Delaunay triangulation} % (fold)
 \label{sec:computational_geometry_delaunay_triangulatiom}
 
-\subsection{Disposition Computational Geometry, Delaunay triangulatiom} % (fold)
+\subsection{Disposition Computational Geometry, Delaunay triangulation} % (fold)
 \label{sub:disposition8}
 \begin{itemize}
   \item Applications
@@ -1596,7 +1599,7 @@ The central question here is how we triangulate the points? and if there are mul
 \label{sub:definition}
 
 What do we mean by a good triangulation?
-Simple case is to connect one point to every other point. This is NOT a good triangulation. The ideal triangulation is a triabgulation that is ballanced, i.e. the we want to avoid small angles. 
+Simple case is to connect one point to every other point. This is NOT a good triangulation. The ideal triangulation is a triangulation that is balanced, i.e. the we want to avoid small angles. 
 
 We define angle optimality as follows.
 
@@ -1686,7 +1689,7 @@ Given a set of points, \emph{take the convex hull}, add diagonals (edges that co
 In order to make the triangulation into a Delaunay triangulation, we can do edge flips until there are no more illegal edges.
 
 
-The most straightforward way of efficiently computing the Delaunay triangulation is to repeatedly add one vertex at a time, retriangulating the affected parts of the graph. When a vertex v is added, we split in three the triangle that contains v, then we apply the flip algorithm. Done naively, this will take O(n) time: we search through all the triangles to find the one that contains v, then we potentially flip away every triangle. Then the overall runtime is O(n2).
+The most straightforward way of efficiently computing the Delaunay triangulation is to repeatedly add one vertex at a time, re-triangulating the affected parts of the graph. When a vertex v is added, we split in three the triangle that contains v, then we apply the flip algorithm. Done naively, this will take O(n) time: we search through all the triangles to find the one that contains v, then we potentially flip away every triangle. Then the overall runtime is O(n2).
 
 % subsection naive_method (end)
 
